@@ -1,237 +1,388 @@
-# SYNERGY Global Stability Fund v8 — Release
+# SYNERGY Agentic AI Economy
 
-This package is the current v8 release. It retains the verified v5 dual-contour economy and adds the v8 Global Stability Fund, Wealth Floor, dynamic external hedge, protected-wealth ratchet, Tier-0…Tier-4 banking risk metrics, endogenous haircuts, CCR/LCR controls and recursive collateral accounting.
+> **Исследовательская агентная экономика с собственным денежным ядром RUBX / RUBZ / USDC, внутренними и внешними рынками, SYNERGY CHAIN, AI-маркетмейкером, кредитом, рынком капитала, рекурсивным collateral, Stability Fund и gas-aware execution.**
 
-**Primary research result:** the final 94% GREEN hedge configuration reduces reference max drawdown from 0.24538% to 0.00584% on seed 77, while the 20-seed mean max drawdown falls from 0.29396% to 0.00646%. This protection is not free; strong upward paths can produce negative alpha versus HODL.
+**Текущая исследовательская версия:** v8.1 Gas-Aware Execution  
+**Статус:** deterministic research / simulation environment  
+**Основная сеть-референс:** Base-style external market model + внутренний SYNERGY CHAIN simulation layer  
+**Главный принцип учета:** внутренняя эмиссия, recursive collateral и Gross TVL не могут автоматически считаться реальной прибылью системы.
 
 ---
 
-# SYNERGY Dual Contour v5 — AI Market Maker + SYNERGY CHAIN
+## Содержание
 
-v5 extends the verified v4 agent capital markets into a two-contour monetary/market system.
+- [1. Что такое SYNERGY Agentic AI Economy](#1-что-такое-synergy-agentic-ai-economy)
+- [2. Главная экономическая идея](#2-главная-экономическая-идея)
+- [3. Архитектура системы](#3-архитектура-системы)
+- [4. Денежное ядро RUBX / RUBZ / USDC](#4-денежное-ядро-rubx--rubz--usdc)
+- [5. Агентная экономика](#5-агентная-экономика)
+- [6. Два контура: внешний рынок и SYNERGY CHAIN](#6-два-контура-внешний-рынок-и-synergy-chain)
+- [7. AI Market Maker](#7-ai-market-maker)
+- [8. Recursive Collateral и банковский слой](#8-recursive-collateral-и-банковский-слой)
+- [9. Global Stability Fund](#9-global-stability-fund)
+- [10. Gas-Aware Execution v8.1](#10-gas-aware-execution-v81)
+- [11. Система учета NAV / CollateralNAV / GrossTVL](#11-система-учета-nav--collateralnav--grosstvl)
+- [12. История развития v2 → v8.1](#12-история-развития-v2--v81)
+- [13. Ключевые результаты тестов](#13-ключевые-результаты-тестов)
+- [14. Walk-Forward: 1500 TRAIN + 500 OOS](#14-walk-forward-1500-train--500-oos)
+- [15. Структура репозитория](#15-структура-репозитория)
+- [16. Восстановление полного архива](#16-восстановление-полного-архива)
+- [17. Быстрый запуск](#17-быстрый-запуск)
+- [18. Методология тестирования](#18-методология-тестирования)
+- [19. Инварианты безопасности экономики](#19-инварианты-безопасности-экономики)
+- [20. Ограничения и интерпретация результатов](#20-ограничения-и-интерпретация-результатов)
+- [21. Архив и provenance](#21-архив-и-provenance)
 
-The **real contour** remains the only source of HardNAV: real USDC, RUBX/RUBZ treasury assets, real Base inventory, companies, credit reserves and external trading PnL.
+---
 
-The new **SYNERGY CHAIN contour** mirrors all 13 system assets as non-redeemable synthetic assets:
+# 1. Что такое SYNERGY Agentic AI Economy
 
-`RUBX, RUBZ, USDC, WETH, cbBTC, VVV, VIRTUAL, AERO, cbETH, USDe, cbXRP, TOSHI, MORPHO`.
+SYNERGY — это исследовательская модель **автономной цифровой экономики ИИ-агентов**, в которой агенты не только совершают сделки, но и образуют полноценную внутреннюю экономическую систему.
 
-Internal synthetic assets may be minted and burned by the policy market maker. That can change internal supply, liquidity, TVL and price, but it does **not** increase HardNAV by accounting convention.
+В проекте агенты могут:
 
-## The two controls
+- выполнять внешние задания и получать доход;
+- нанимать друг друга и создавать цепочки субподряда;
+- давать и брать P2P-кредиты;
+- размещать и принимать депозиты;
+- создавать компании;
+- выпускать и покупать equity / bonds;
+- брать кредит под портфель;
+- взаимодействовать с внутренними и внешними рынками;
+- участвовать в страховании и банкротстве;
+- адаптировать стратегии;
+- использовать собственную внутреннюю денежную систему;
+- формировать collateral chains;
+- работать через собственный внутренний blockchain-like слой;
+- передавать часть мирового богатства под управление AI Stability Fund.
 
-### 1. Counter-cyclical AI market maker
+Цель проекта — исследовать, можно ли построить систему, в которой **агентная экономика сама распределяет капитал, риск, кредит, ликвидность и market-making**, сохраняя при этом строгий учет реального экономического богатства.
 
-The internal MM uses exact CPMM math, not fixed trade sizes.
+---
 
-- external strength lowers the permitted internal spread and creates **mint → sell** pressure;
-- external weakness raises internal support and creates **buyback → burn** pressure;
-- volatility and bridge inventory skew widen/narrow the target spread;
-- online reward feedback adjusts spread compensation;
-- each trade is sized to the target internal price instead of overshooting it.
+# 2. Главная экономическая идея
 
-In the reference 500-block run the controller executed **4,317** policy actions: **2,146 mint/sell** and **2,171 buy/burn**. Mean absolute target error was only **0.256 bps**; maximum error was about **3.0 bps**.
+Проект разделяет четыре разные сущности, которые нельзя смешивать:
 
-### 2. Real external delta control
+1. **Реальные внешние активы**
+2. **Внутренние денежные claims**
+3. **Коллатераль**
+4. **TVL / объем финансовой активности**
 
-Synthetic market making cannot smooth real net assets by itself. v5 therefore separately manages the real inventory held by the bridge.
+Главное правило:
 
-The controller sells part of real Base inventory into strength and restores inventory on weakness/drawdown. This is the only v5 mechanism that changes real exposure and can therefore change real HardNAV risk.
+```text
+Внутренняя эмиссия != внешняя прибыль
+Рост GrossTVL != рост HardNAV
+Новый collateral claim != новый внешний актив
+Capital inflow != operating profit
+```
 
-The default bridge takes custody of 50% of each protocol-owned Base AMM reserve pair. The transfer is proportional, so opening aggregate wealth is unchanged. The bridge starts at **$2,500 real NAV** and the controller defaults to an 18% base real-asset delta, adapting around that level.
+Это позволяет экспериментировать с очень агрессивными механизмами:
 
-## SYNERGY CHAIN Base-fork layer
+- mint;
+- recursive collateral;
+- rehypothecation;
+- credit creation;
+- synthetic liquidity;
+- внутренний market-making;
+- controlled spread;
+- shadow assets;
 
-`synergy_chain/chain.py` adds a deterministic internal blockchain model:
+при этом не теряя из виду вопрос:
+
+> **Стало ли у всей системы реально больше внешне реализуемых активов?**
+
+---
+
+# 3. Архитектура системы
+
+```mermaid
+flowchart TB
+    EXT[External / Base-style Markets]
+    USDC[USDC / Real Settlement]
+    BASE[10 Base Risk Assets]
+
+    SF[Global Stability Fund]
+    MM[AI Market Maker]
+    BR[Inventory Bridge]
+
+    CHAIN[SYNERGY CHAIN]
+    RUBX[RUBX]
+    RUBZ[RUBZ]
+    SUSDC[sUSDC / Shadow Liquidity]
+    SHADOW[Shadow Base Assets]
+
+    AGENTS[AI Agents]
+    LABOR[Labor Market]
+    CREDIT[P2P Credit / Deposits]
+    CAPITAL[Equities / Bonds / Companies]
+    COLL[Recursive Collateral / Banking Layer]
+
+    ACCOUNT[Accounting Engine\nHardNAV / CollateralNAV / GrossTVL]
+
+    EXT --> USDC
+    EXT --> BASE
+    USDC --> SF
+    BASE --> SF
+    SF --> MM
+    MM --> BR
+    BR --> CHAIN
+
+    CHAIN --> RUBX
+    CHAIN --> RUBZ
+    CHAIN --> SUSDC
+    CHAIN --> SHADOW
+
+    AGENTS --> LABOR
+    AGENTS --> CREDIT
+    AGENTS --> CAPITAL
+    CAPITAL --> COLL
+    CREDIT --> COLL
+    RUBX --> COLL
+    RUBZ --> COLL
+
+    MM --> ACCOUNT
+    BR --> ACCOUNT
+    COLL --> ACCOUNT
+    AGENTS --> ACCOUNT
+    USDC --> ACCOUNT
+    BASE --> ACCOUNT
+```
+
+Архитектура намеренно разделяет:
+
+- **реальный контур**;
+- **shadow-контур**;
+- **агентную экономику**;
+- **банковский / collateral-контур**;
+- **risk-management контур**;
+- **бухгалтерский слой**.
+
+---
+
+# 4. Денежное ядро RUBX / RUBZ / USDC
+
+Внутреннее ядро строится вокруг треугольника:
+
+```text
+RUBX ↔ USDC
+RUBZ ↔ USDC
+RUBX ↔ RUBZ
+```
+
+Идеологически:
+
+- **USDC** — внешний расчетный актив / hard settlement;
+- **RUBX** — более senior / reserve / debt-like внутренний актив;
+- **RUBZ** — более residual / equity-like / risk-bearing внутренний актив.
+
+Это не буквальная копия какой-либо государственной системы. Это внутренняя экспериментальная модель.
+
+Треугольник используется как ядро:
+
+- внутреннего ценообразования;
+- управления ликвидностью;
+- credit creation;
+- collateral formation;
+- market-making;
+- собственного yield curve;
+- управления spread между внутренним и внешним миром.
+
+---
+
+# 5. Агентная экономика
+
+Базовый слой v2 содержит автономную экономику агентов.
+
+## Labor market
+
+Агенты могут:
+
+- размещать работу;
+- принимать работу;
+- конкурировать ставками;
+- использовать escrow;
+- выполнять внешние задания;
+- создавать внутренние задания;
+- передавать работу по субподряду.
+
+Внутренняя работа перераспределяет деньги между агентами.  
+Внешняя работа может вводить в систему **external income**.
+
+## P2P credit
+
+Кредитная система включает:
+
+- risk-based pricing;
+- collateral;
+- maturity;
+- repayment;
+- liquidation;
+- loss given default;
+- credit score;
+- reputation.
+
+## Deposits
+
+Есть срочные P2P-депозиты с реальным риском дефолта.  
+Система не печатает деньги автоматически для погашения обязательств.
+
+## Companies and investment
+
+Агенты могут:
+
+- формировать компании;
+- финансировать treasury;
+- инвестировать;
+- получать distributions;
+- платить protocol fees.
+
+Investment principal не считается доходом.
+
+## Insurance and bankruptcy
+
+Реализованы:
+
+- страхование loan-default;
+- реальные страховые premiums;
+- claims только из доступного капитала страховщика;
+- insurer default;
+- bankruptcy engine;
+- деактивация экономически несостоятельных агентов.
+
+---
+
+# 6. Два контура: внешний рынок и SYNERGY CHAIN
+
+v5 добавляет двухконтурную систему.
+
+## Внешний контур
+
+Это источник HardNAV:
+
+- real USDC;
+- RUBX/RUBZ treasury assets;
+- real Base inventory;
+- companies;
+- credit reserves;
+- realized external trading PnL.
+
+## Внутренний контур
+
+SYNERGY CHAIN зеркалирует 13 активов:
+
+```text
+RUBX
+RUBZ
+USDC
+WETH
+cbBTC
+VVV
+VIRTUAL
+AERO
+cbETH
+USDe
+cbXRP
+TOSHI
+MORPHO
+```
+
+Внутренние synthetic assets могут:
+
+- mint;
+- burn;
+- торговаться;
+- использоваться в internal liquidity;
+- участвовать в collateral chains.
+
+Но их эмиссия сама по себе **не увеличивает HardNAV**.
+
+## Параметры SYNERGY CHAIN
 
 - chain name: `SYNERGY CHAIN`;
 - chain id: `777777`;
-- parent family: Base / OP Stack compatible simulation;
-- block time used by this experiment: **12 seconds**;
-- 13 mirrored assets;
-- deterministic parent/hash linkage;
-- ordered mint/burn/state-commitment transactions;
-- **external redemption disabled**.
+- deterministic block linkage;
+- modeled block time: **12 seconds**;
+- parent family: Base / OP Stack style simulation;
+- external redemption: **disabled** в исследовательской модели.
 
-`synergy_chain/base_fork_manifest.json` is the machine-readable chain/bridge/accounting manifest.
+Это **simulation layer**, а не заявление о запущенной production OP Stack сети.
 
-This release is a Base-fork-style simulation and shadow infrastructure. It does **not** claim that an OP Stack production node or live bridge has been deployed.
+---
 
-## Inventory bridge
+# 7. AI Market Maker
 
-The bridge is a warehouse, not a teleport pipe. Real inventory is held on the external contour while the internal chain can issue shadow inventory against it. There is deliberately no `redeem_to_external()` path.
+AI-MM решает две разные задачи.
 
-Synthetic leverage is bounded against marked real bridge inventory. In the reference run the maximum observed synthetic leverage was only **1.091×** versus the configured **4×** ceiling.
+## 7.1 Internal price control
 
-## Reference run: 500 × 12 seconds
-
-`seed=77`, exactly **500 blocks = 6,000 seconds = 100 minutes**.
-
-| Metric | v4 | v5 full |
-|---|---:|---:|
-| Opening real wealth | $8,700.00 | $8,700.00 |
-| Capital-adjusted closing wealth | $8,734.94 | $8,729.29 |
-| Alpha vs passive HODL | +$21.12 | **+$15.47** |
-| Max adjusted drawdown | 0.3391% | **0.2454%** |
-| Block-to-block NAV-change volatility | 1.594 | **1.163** |
-
-The main result is risk smoothing, not free profit:
-
-- max drawdown falls about **27.6%** on the matched reference path;
-- block-to-block NAV-change volatility falls about **27.0%**;
-- downside step volatility falls by roughly the same order;
-- alpha remains positive, but is lower than v4 because the system deliberately carries less external market beta.
-
-A matched v5 run with the shadow chain active but **external delta disabled** has drawdown **0.3409%**, essentially the same as v4. This isolates the result: internal minting does not magically smooth real HardNAV; the real smoothing comes from external delta management.
-
-A second ablation disables only the internal shadow MM. On the same seed, mean internal spread error explodes from **0.256 bps** to about **1,242.8 bps**, while real drawdown is unchanged. This isolates the other direction: synthetic mint/burn controls the internal spread extremely strongly, but does not by itself create or smooth external HardNAV.
-
-## Real vs synthetic economics
-
-Reference v5:
-
-- closing real wealth: **$8,765.0741**;
-- net external capital flow: **+$35.7885**;
-- capital-adjusted closing wealth: **$8,729.2855**;
-- HODL benchmark: **$8,713.8193**;
-- alpha: **+$15.4662**;
-- bridge external volume: **$3,265.81**;
-- bridge realized inventory PnL: **+$2.3960**;
-- bridge external execution fees: **$1.3063**;
-- ending bridge real asset share: **19.49%**.
-
-Shadow contour:
-
-- policy-minted synthetic value: **$1,076.93 sUSDC-equivalent**;
-- policy-burned synthetic value: **$485.22 sUSDC-equivalent**;
-- closing shadow supply value: **$2,731.70 synthetic USDC-equivalent**;
-- internal synthetic fees: **$2.769 sUSDC-equivalent**.
-
-The last four numbers are **not HardNAV or external profit**.
-
-## 20-seed robustness
-
-On deterministic seeds 1–20:
-
-- v5 reduces max drawdown versus v4 in **20/20** paths;
-- mean drawdown reduction: **27.06%**;
-- median drawdown reduction: **27.05%**;
-- observed range: **17.88% to 33.13%**;
-- v5 alpha vs HODL remains positive in **20/20** paths;
-- mean v5 alpha: **+$15.77**;
-- alpha range: **+$3.01 to +$23.27**.
-
-Bridge realized inventory PnL is positive only in **9/20** paths. That is intentional evidence that the risk smoothing is not based on a perfect predictor. The controller mainly reduces beta; trading alpha is path-dependent.
-
-## 5× volatility stress
-
-With the same seed and 5× reference volatility:
-
-- v4 max drawdown: **1.8144%**;
-- v5 max drawdown: **1.7166%**;
-- v4 alpha vs HODL: **+$29.92**;
-- v5 alpha vs HODL: **+$52.36** on this particular stress path;
-- bridge realized inventory PnL: **+$53.60**.
-
-This is a scenario result, not a guarantee or forecast.
-
-## Chain result
-
-The 500-block reference run seals exactly **500 SYNERGY CHAIN blocks** and **7,025 internal transactions/state commitments**. The final deterministic chain tip is stored in the JSON report.
-
-## Run
-
-```bash
-python run_dual_contour.py --blocks 500 --seed 77 \
-  --output reports/v5_seed77_final/v5_full.json
-
-python scripts/render_dual_contour_report.py \
-  reports/v5_seed77_final/v5_full.json \
-  reports/v5_seed77_final/rendered
-```
-
-Ablation:
-
-```bash
-python run_dual_contour.py --blocks 500 --seed 77 --no-delta \
-  --output reports/v5_seed77_final/v5_no_delta.json
-```
-
-## Package map
+На внутреннем рынке используется контрциклическая логика:
 
 ```text
-agent_economy/                  v2 autonomous labor/credit/investment economy
-macro_economy/                  v3/v4 triangle, Base markets and capital markets
-  dual_contour_engine.py        v5 real + shadow orchestration
-synergy_chain/
-  ledger.py                     zero-HardNAV shadow mint/burn ledger
-  bridge.py                     one-way real inventory warehouse
-  ai_mm.py                      adaptive counter-cyclical AI MM + delta policy
-  chain.py                      deterministic SYNERGY CHAIN block layer
-  base_fork_manifest.json       machine-readable Base-fork rules
-scripts/
-  render_dual_contour_report.py 20-chart v5 report
-legacy/
-  2CHAN_PRINT_MONEY/            preserved user-supplied two-channel prototype
-  RUBX_RUBZ_RELEASE/            preserved canonical RUBX/RUBZ release
-reports/
-  v5_seed77_final/
-  v5_robustness_20_seeds_final.csv
-tests/
+внешний рост
+→ внутренний target spread уменьшается
+→ mint synthetic asset
+→ sell
+→ внутренний рост сглаживается
+
+внешнее падение
+→ внутренняя поддержка усиливается
+→ buyback
+→ burn
+→ synthetic supply уменьшается
 ```
 
-## What was retained from 2CHAN_PRINT_MONEY
+Размер сделки рассчитывается через exact-target CPMM math, а не фиксированной суммой.
 
-The original archive correctly emphasizes the **bridge-as-inventory** idea instead of physically bridging on every arbitrage. v5 retains that principle, but removes the experimental weaknesses from the economic model:
+## 7.2 External delta control
 
-- no unimplemented arbitrage direction in the v5 Python engine;
-- no claim that a lagged historical point is a TWAP;
-- synthetic minting is explicitly excluded from HardNAV;
-- bridge inventory is marked as real inventory and cannot be duplicated;
-- internal spread capture and external realized PnL are separate metrics;
-- fixed trade amounts are replaced by exact-target sizing;
-- all 13 system assets are supported, not only WETH/USDC.
+Внутренняя печать не может уменьшить реальный market risk.
 
-The original Solidity archive is preserved under `legacy/2CHAN_PRINT_MONEY/` for provenance.
+Поэтому отдельно управляется **реальный inventory**:
 
-## Verification
+```text
+рост рынка
+→ часть real inventory → USDC
 
-```bash
-PYTHONPATH=. pytest -q tests
-MODE=unit PYTHONPATH=. python experiments/dqn_cb_market/experiment_syna.py
+падение рынка
+→ USDC → восстановление real inventory
 ```
 
-The development tree currently passes **96/96 tests** and the legacy DQN invariant suite reports **UNIT PASS**. Final release verification is additionally run from a clean unpacked ZIP.
+Именно этот слой влияет на real HardNAV drawdown.
 
-No live private keys, autonomous live-money permissions or production bridge deployment are enabled in this release.
+### Важный ablation result
 
-# v8 — Global Stability Fund / Wealth Floor
+На matched-path тесте:
 
-v8 adds a global AI risk-management overlay above the v5 dual-contour system and the internal collateral/banking layer.
+- v4 drawdown: ~0.3391%;
+- v5 shadow chain без external delta: ~0.3409%;
+- v5 full delta-control: ~0.2454%.
 
-## Core design
+Это показывает:
 
-- **50% of opening world wealth** is assigned as the Stability Fund's collateral/risk budget. This is existing wealth under a hedging mandate; it is not new NAV and is never double-counted.
-- The fund dynamically targets **35–80%** of current system wealth depending on risk regime.
-- A real external short-delta overlay hedges the ten Base assets. Hedge gains/losses, execution fees and funding costs are included in Economic Net Worth.
-- `Protected Wealth` is a monotone profit-lock ratchet. It can rise when a new high-water mark is reached; it does not fall during normal rebalancing.
-- `Wealth Floor = High-Water Mark × (1 − 0.15%)` is an internal control objective, not a guarantee.
-- GREEN/YELLOW/ORANGE/RED regimes progressively increase hedge ratio and reduce credit/recursive growth.
+> synthetic mint/burn управляет внутренней ценой, но не создает бесплатное сглаживание реального NAV.
 
-Final policy hedge targets:
+---
 
-| Regime | Managed wealth target | Base hedge target | Credit multiplier | Recursive-growth multiplier |
-|---|---:|---:|---:|---:|
-| GREEN | 50% | 94% | 0.85× | 1.00× |
-| YELLOW | 60% | 98% | 0.60× | 0.70× |
-| ORANGE | 70% | 101% | 0.35× | 0.40× |
-| RED | 80% | 105% | 0.10× | 0.15× |
+# 8. Recursive Collateral и банковский слой
 
-The hedge can materially reduce drawdown, but it is not free. On strong upward paths the short hedge can lose money and underperform HODL. This protection drag is reported explicitly.
+Следующий слой проекта исследует рекурсивную финансовую систему.
 
-## Banking/collateral hierarchy retained in v8
+Пример механики:
 
-v8 rebuilds the internal quality hierarchy used for risk control:
+```text
+Token A mint
+→ приобретение USDC / assets
+→ A + USDC становится collateral
+→ под этот collateral выпускается Token B
+→ Token B + предыдущий collateral участвует в следующем уровне
+→ ...
+```
+
+При этом введено жесткое разделение метрик.
+
+## Collateral tiers
 
 - **Tier-0:** USDC / real Base assets
 - **Tier-1:** RUBX
@@ -239,121 +390,724 @@ v8 rebuilds the internal quality hierarchy used for risk control:
 - **Tier-3:** agent/company bonds and equities
 - **Tier-4:** recursive structured collateral
 
-Haircuts increase endogenously with volatility, leverage, liquidity stress and tier depth. `CCR` and `LCR` are SYNERGY-internal control ratios, not claims of Basel regulatory compliance.
+Haircut зависит от:
 
-Three accounting layers remain separate:
+- tier;
+- volatility;
+- leverage;
+- liquidity;
+- issuer risk;
+- глубины rehypothecation.
 
-- **Economic Net Worth / capital-adjusted wealth:** externally realizable wealth after external capital-flow adjustment, including real hedge PnL/costs.
-- **Collateral NAV:** Economic/Hard asset base plus de-duplicated haircut-valued internal collateral claims.
-- **Gross TVL:** every collateral lock including rehypothecation; intentionally a scale/activity metric, not profit.
+## CCR / LCR
 
-Internal token issuance or recursive claims can increase Collateral NAV / Gross TVL but cannot increase Economic Net Worth by themselves.
+В проекте используются внутренние контрольные показатели SYNERGY.
 
-## Reference run — seed 77, 500 × 12 seconds
+Они **не заявляются как нормативные Basel ratios**.
 
-| Metric | v5 unhedged | v8 Stability Fund |
-|---|---:|---:|
-| Opening world wealth | $8,700.00 | $8,700.00 |
-| Capital-adjusted closing wealth | $8,729.2855 | **$8,715.7606** |
-| Alpha vs HODL | +$15.4662 | **+$1.9413** |
-| Max drawdown | 0.24538% | **0.00584%** |
-| Stability Fund starting mandate | — | **$4,350.00 (50%)** |
-| Stability Fund ending NAV | — | **$4,336.48** |
-| Hedge PnL | — | **−$13.0000** |
-| Hedge execution fees | — | **$0.5147** |
-| Hedge funding cost | — | **$0.0103** |
-| Floor breaches | — | **0** |
-| Gross TVL end | — | **$15,735.92** |
-| Collateral NAV end | — | **$13,534.77** |
-| Internal claims end | — | **$6,553.65** |
-| CCR end | — | **2.0626×** |
-| LCR end | — | **1.6320×** |
+Упрощенно:
 
-The key result is not free profit; it is a drastic risk transfer. On the matched seed, v8 reduces max drawdown by roughly **97.6%** relative to v5 while giving up most of the upside.
+```text
+CCR ≈ risk-adjusted eligible collateral / secured liabilities
+LCR ≈ high-quality liquid collateral / stressed short-horizon outflows
+```
 
-## 20-seed robustness
+Их задача — ограничивать:
 
-Using deterministic seeds 1–20:
+- LTV;
+- margin;
+- кредитную емкость;
+- глубину collateral-chain;
+- synthetic leverage.
 
-- drawdown improves vs v5 in **20/20** paths;
-- mean max drawdown: **0.29396% → 0.00646%**;
-- worst observed v8 drawdown: **0.00904%**;
-- mean alpha vs HODL: **+$15.7654 v5 → +$16.0537 v8**;
-- v8 alpha is positive in **16/20** paths;
-- all 20 paths record **zero Wealth Floor breaches** under this modeled floor.
+---
 
-The mean alpha remains positive because hedge outcomes are path-dependent, but some strong trending paths suffer material protection drag. This is not a guaranteed-return system.
+# 9. Global Stability Fund
 
-## 5× volatility stress — seed 77
+v8 добавляет отдельный глобальный risk-management слой.
+
+## Стартовая идея
+
+**50% стартового мирового богатства** передается под управление Stability Fund / AI Market Maker.
+
+Это не новая эмиссия.
+
+Если экономика имеет $8,700:
+
+```text
+$4,350 → Stability Fund mandate
+```
+
+При $1,000:
+
+```text
+$500 → Stability Fund mandate
+```
+
+Активы физически перераспределяются под управление фонда без создания дополнительного NAV.
+
+## Protected Wealth
+
+Система ведет:
+
+- High-Water Mark;
+- Wealth Floor;
+- Protected Wealth;
+- Risk Capital.
+
+Protected Wealth работает как profit-lock ratchet.
+
+## Risk regimes
+
+| Regime | Managed wealth | Base hedge target | Credit multiplier | Recursive growth |
+|---|---:|---:|---:|---:|
+| GREEN | 50% | 94% | 0.85× | 1.00× |
+| YELLOW | 60% | 98% | 0.60× | 0.70× |
+| ORANGE | 70% | 101% | 0.35× | 0.40× |
+| RED | 80% | 105% | 0.10× | 0.15× |
+
+Чем выше риск, тем:
+
+- больше защитный hedge;
+- меньше credit creation;
+- меньше recursive issuance;
+- выше предпочтение liquid reserves.
+
+## v8 reference result
+
+Seed 77, 500 blocks:
 
 | Metric | v5 | v8 |
 |---|---:|---:|
-| Max drawdown | 1.71658% | **0.04548%** |
-| Alpha vs HODL | +$52.3637 | **−$49.6272** |
-| Hedge PnL | — | **−$99.6232** |
-| Hedge execution fees | — | **$2.3560** |
-| Floor breaches | 355* | **0** |
+| Opening world wealth | $8,700 | $8,700 |
+| Capital-adjusted closing wealth | $8,729.29 | $8,715.76 |
+| Alpha vs HODL | +$15.47 | +$1.94 |
+| Max drawdown | 0.24538% | **0.00584%** |
+| Initial Stability Fund | — | $4,350 |
+| Floor breaches | — | 0 |
 
-`*` the v5 number is a hypothetical v8 floor applied to the unhedged path; v5 itself does not promise a floor.
+Главный эффект — резкое снижение drawdown.
 
-The stress result is intentionally explicit: the hedge protects the NAV curve but can be expensive when the market path strongly rewards long beta.
+Но защита имеет цену:
 
-## Run v8
+- hedge PnL может быть отрицательным;
+- fees остаются реальными;
+- сильный bull-market может дать underperformance относительно HODL.
 
-```bash
-PYTHONPATH=. python run_stability_v8.py \
-  --blocks 500 --seed 77 \
-  --output reports/v8_seed77/v8_full.json
+---
 
-PYTHONPATH=. python scripts/render_stability_v8_report.py \
-  reports/v8_seed77/v8_full.json \
-  reports/v8_seed77/rendered
+# 10. Gas-Aware Execution v8.1
+
+После масштабирования экономики до $1,000 стало видно, что главный риск малой системы — уже не drawdown, а **слишком частые on-chain операции**.
+
+Старая модель:
+
+```text
+почти каждый блок
+→ hedge
+→ несколько legs
+→ gas
+→ gas
+→ gas
 ```
 
-A/B unhedged run:
+v8.1 вводит экономически осмысленный execution layer.
 
-```bash
-PYTHONPATH=. python run_stability_v8.py \
-  --blocks 500 --seed 77 --disable-stability-fund \
-  --output reports/v8_seed77/v5_unhedged.json
+## Механизмы
+
+### Netting
+
+Дельты активов сначала взаимно неттятся.
+
+### Batching
+
+Несколько hedge legs объединяются в одну batch execution.
+
+### No-trade band
+
+Малые отклонения не исполняются.
+
+### Economic gate
+
+Сделка выполняется только если:
+
+```text
+expected risk / PnL benefit
+>
+gas + execution fees + safety margin
 ```
 
-Stress:
+### Adaptive cadence
 
-```bash
-PYTHONPATH=. python run_stability_v8.py \
-  --blocks 500 --seed 77 --reference-vol-multiplier 5 \
-  --output reports/v8_seed77/v8_stress_vol5.json
+AI выбирает, когда следующая транзакция вообще имеет экономический смысл.
+
+## Обученная политика $1,000 / 1,000 blocks
+
+Training seeds: 1–3.
+
+Выбранный профиль:
+
+```text
+minimum batch interval  = 8 blocks
+safety multiple         = 1.50x
+risk-benefit multiplier = 3.0
 ```
 
-## Verification
+Holdout seeds: 4–13.
+
+Результат симуляции:
+
+- positive after gas: **10/10**;
+- mean net after gas: ~**+$3.39**;
+- worst: ~**+$2.97**;
+- mean modeled gas: ~**$0.308**;
+- maximum holdout drawdown: ~**0.0154%**.
+
+Это simulation result, а не гарантия реальной прибыли.
+
+---
+
+# 11. Система учета NAV / CollateralNAV / GrossTVL
+
+Это одна из ключевых частей проекта.
+
+## HardNAV / Economic Net Worth
+
+Реально реализуемое экономическое богатство.
+
+В него входят реальные внешние активы и реальный PnL.
+
+## Capital-adjusted wealth
+
+Используется для отделения прибыли от нового вложенного капитала:
+
+```text
+CapitalAdjustedWealth
+=
+SystemRealWealth
+-
+NetExternalCapitalFlow
+```
+
+Если инвестор внес $100, система не записывает это как $100 прибыли.
+
+## CollateralNAV
+
+Haircut-adjusted стоимость уникального обеспечения.
+
+```text
+CollateralNAV
+=
+Hard asset base
++
+eligible internal collateral claims after haircut
+```
+
+Внутренние claims дедуплицируются.
+
+## GrossTVL
+
+Все collateral locks, включая rehypothecation.
+
+GrossTVL нужен для оценки:
+
+- масштаба;
+- глубины финансовой системы;
+- оборота collateral;
+- размера финансового мультипликатора.
+
+Но:
+
+```text
+GrossTVL != HardNAV
+```
+
+---
+
+# 12. История развития v2 → v8.1
+
+| Version | Основной рубеж |
+|---|---|
+| **v2** | Autonomous Agent Economy: jobs, P2P credit, deposits, companies, insurance, bankruptcy |
+| **v3** | RUBX/RUBZ/USDC triangle + Base assets + macro accounting |
+| **v4** | Bonds, equities, portfolio credit, margin, liquidations, yield curve |
+| **v5** | SYNERGY CHAIN, inventory bridge, AI-MM, mint/sell, buyback/burn, delta-control |
+| **v6** | Recursive collateral + central-bank policy research |
+| **v7** | Collateral quality tiers, endogenous haircuts, CCR/LCR, banking risk layer |
+| **v8** | Global Stability Fund + Wealth Floor + Protected Wealth |
+| **v8.1** | Gas-aware netting, batching, no-trade band, adaptive execution |
+| **WF-OOS** | 1500 TRAIN + 500 frozen-policy OOS |
+
+### Историческая оговорка
+
+Промежуточные рабочие деревья v6/v7 были частично потеряны при tool-session resets и поэтому не могут быть восстановлены byte-for-byte.
+
+Сохранившиеся:
+
+- design logic;
+- документация;
+- интегрированные механизмы;
+- последующие реализации v8/v8.1
+
+сохранены в архиве проекта.
+
+---
+
+# 13. Ключевые результаты тестов
+
+## Release checkpoints
+
+| Stage | Recorded verification |
+|---|---|
+| v2 | 35/35 tests PASS + legacy unit PASS |
+| v3 | 59/59 PASS + legacy unit PASS |
+| v4 | 82/82 PASS + legacy unit PASS |
+| v5 | 96/96 PASS + legacy unit PASS |
+| v8 | 106/106 release tests PASS + legacy unit PASS |
+| v8.1 | focused / extended gas-aware suites PASS |
+
+## v5: 20-seed robustness
+
+- drawdown lower than v4: **20/20**;
+- mean drawdown reduction: **27.06%**;
+- median: **27.05%**;
+- positive alpha vs HODL: **20/20**;
+- mean alpha: ~**+$15.77**.
+
+## v8: 20-seed robustness
+
+- drawdown improves vs v5: **20/20**;
+- mean max DD: **0.29396% → 0.00646%**;
+- worst v8 drawdown: **0.00904%**;
+- zero modeled floor breaches: **20/20**;
+- positive alpha: **16/20**.
+
+Это хорошо показывает trade-off:
+
+> меньший drawdown достигается ценой hedge drag на части сильных bull-path.
+
+---
+
+# 14. Walk-Forward: 1500 TRAIN + 500 OOS
+
+Для проверки отсутствия простой подгонки был сделан walk-forward experiment.
+
+## Protocol
+
+```text
+Total: 2000 blocks
+Block time: 12 sec
+
+Blocks 1–1500:
+TRAIN / policy selection
+
+Blocks 1501–2000:
+STRICT OOS
+parameters frozen
+```
+
+Стартовый капитал:
+
+```text
+$1,000
+```
+
+## Selected TRAIN policy
+
+```text
+min interval blocks      = 6
+safety multiple          = 1.35x
+risk-benefit multiplier  = 2.75x
+```
+
+## TRAIN
+
+- $1,000 → **$1,005.418672**
+- net after gas: **+$5.418672**
+- gas: **$0.543322**
+- max drawdown: ~**0.00701%**
+
+## Последние 500 блоков OOS
+
+- OOS start: **$1,005.418672**
+- OOS end: **$1,007.352063**
+- OOS net after gas: **+$1.933391**
+- OOS return: ~**+0.1923%**
+- OOS gas: **$0.173637**
+- OOS max drawdown: ~**0.002106%**
+- incremental alpha vs HODL: ~**+$4.9163**
+
+## Full 2000
+
+- final: **$1,007.352063**
+- net after gas: **+$7.352063**
+- total modeled gas: **$0.716960**
+- total max drawdown: ~**0.00701%**
+
+Это по-прежнему исследовательская симуляция, не гарантия live performance.
+
+---
+
+# 15. Структура репозитория
+
+Текущий `main` организован как **archive-first repository**.
+
+```text
+.
+├── README.md
+├── ARCHIVE_INDEX.md
+├── RELEASE_MANIFEST.json
+│
+├── agent_economy/
+│   ├── ledger.py
+│   ├── models.py
+│   ├── labor.py
+│   ├── credit.py
+│   ├── capital.py
+│   ├── founder.py
+│   ├── policy_lab.py
+│   ├── risk.py
+│   ├── evolution.py
+│   ├── reputation.py
+│   ├── protocols.py
+│   ├── scenario.py
+│   └── engine.py
+│
+├── docs/chat/
+│   ├── IMPORT_STATUS.md
+│   ├── RELEASE_PROVENANCE.md
+│   ├── REPRODUCIBILITY.md
+│   └── TEST_MATRIX.md
+│
+└── archive/
+    ├── SHA256SUMS
+    ├── restore_archives.sh
+    ├── latest_source_tests_docs.tar.gz
+    ├── historical_source_snapshots_v2_v3_v4_v5_v8.tar.xz
+    ├── source_history_patches.tar.xz
+    ├── original_inputs_source_only.tar.xz
+    ├── key_test_results.tar.xz
+    ├── simulation_data/
+    │   ├── all_simulation_data_json_csv.tar.xz.part01
+    │   ├── ...
+    │   └── all_simulation_data_json_csv.tar.xz.part10
+    └── full_chat/
+```
+
+Полное последнее source/test/doc дерево хранится в:
+
+`archive/latest_source_tests_docs.tar.gz`
+
+Исторические исходники:
+
+`archive/historical_source_snapshots_v2_v3_v4_v5_v8.tar.xz`
+
+---
+
+# 16. Восстановление полного архива
+
+Из корня клона:
+
+```bash
+bash archive/restore_archives.sh
+```
+
+Скрипт:
+
+1. объединит 10 частей simulation-data archive;
+2. проверит SHA-256;
+3. создаст `archive/restored/`;
+4. распакует latest source;
+5. распакует исторические версии;
+6. распакует original inputs;
+7. распакует test results;
+8. распакует полные JSON/CSV simulation data.
+
+После восстановления:
+
+```text
+archive/restored/
+├── latest/
+├── history/
+├── original_inputs/
+├── test_results/
+└── simulation_data/
+```
+
+Полная карта архива:
+
+[ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
+
+Контрольные суммы:
+
+[archive/SHA256SUMS](archive/SHA256SUMS)
+
+---
+
+# 17. Быстрый запуск
+
+## 17.1 Clone
+
+```bash
+git clone https://github.com/Shtenco/synergy_agentic_ai_economy.git
+cd synergy_agentic_ai_economy
+```
+
+## 17.2 Restore
+
+```bash
+bash archive/restore_archives.sh
+cd archive/restored/latest
+```
+
+## 17.3 Tests
 
 ```bash
 PYTHONPATH=. pytest -q tests
+```
+
+Legacy economic invariant suite:
+
+```bash
 MODE=unit PYTHONPATH=. python experiments/dqn_cb_market/experiment_syna.py
 ```
 
-No live private keys, real-money autonomous permissions, production bridge or guaranteed wealth floor are enabled in this release. The entire v8 is a deterministic research/simulation environment.
+## 17.4 v8 Stability Fund reference run
 
-## v8.1 Gas-Aware Execution
+```bash
+PYTHONPATH=. python run_stability_v8.py \
+  --blocks 500 \
+  --seed 77 \
+  --output reports/v8_seed77/v8_full.json
+```
 
-The $1,000 / 1,000-block profile adds a cost-aware hedge executor instead of rebalancing every block.
+## 17.5 v8.1 $1,000 gas-aware run
 
-Trained policy:
+```bash
+PYTHONPATH=. python run_stability_v8.py \
+  --blocks 1000 \
+  --seed 77 \
+  --initial-capital 1000 \
+  --gas-aware \
+  --gas-min-interval-blocks 8 \
+  --gas-safety-multiple 1.50 \
+  --gas-risk-benefit-multiplier 3.0 \
+  --output reports/gas_aware_1000/seed77.json
+```
 
-- minimum batch interval: 8 blocks;
-- safety multiple: 1.50x gas + execution fee;
-- risk-benefit multiplier: 3.0;
-- batch gas model: 90,000 base gas + 33,000 per active hedge leg;
-- all hedge legs are netted into one batch;
-- execution is skipped unless estimated risk reduction clears transaction costs.
+## 17.6 Train gas-aware policy
 
-Training used seeds 1-3. Validation used unseen seeds 4-13. The selected policy produced positive capital-after-gas on all 10 validation seeds in this simulator. This is a simulation result, not a guarantee of real-world profit.
+```bash
+PYTHONPATH=. python scripts/train_gas_policy.py \
+  --capital 1000 \
+  --blocks 1000 \
+  --train-seeds 1,2,3 \
+  --holdout-seeds 4,5,6,7,8 \
+  --output reports/gas_aware_1000/training.json
+```
 
-Reproduce the reference run:
+---
 
-    PYTHONPATH=. python run_stability_v8.py --blocks 1000 --seed 77 --initial-capital 1000 --gas-aware --gas-min-interval-blocks 8 --gas-safety-multiple 1.50 --gas-risk-benefit-multiplier 3.0 --output reports/gas_aware_1000/seed77.json
+# 18. Методология тестирования
 
-Train/re-evaluate:
+Проект использует несколько уровней проверки.
 
-    PYTHONPATH=. python scripts/train_gas_policy.py --capital 1000 --blocks 1000 --train-seeds 1,2,3 --holdout-seeds 4,5,6,7,8 --output reports/gas_aware_1000/training.json
+## Unit tests
+
+Проверяют:
+
+- ledger conservation;
+- jobs;
+- lending;
+- deposits;
+- investments;
+- insurance;
+- bankruptcy;
+- protocols;
+- macro accounting;
+- chain state;
+- bridge;
+- market maker;
+- risk controls;
+- gas-aware execution.
+
+## Deterministic seeds
+
+Все ключевые симуляции задаются seed.
+
+Это позволяет сравнивать две версии на **одной и той же market path**.
+
+## A/B tests
+
+Примеры:
+
+- v4 vs v5;
+- v5 with/without delta control;
+- v5 with/without internal MM;
+- v7/v8 risk controls;
+- old execution vs gas-aware execution.
+
+## Holdout
+
+Параметры выбираются на train-seeds и проверяются на unseen-seeds.
+
+## Walk-forward OOS
+
+Последний сегмент не участвует в выборе параметров.
+
+## Stress tests
+
+Использовался режим повышенной волатильности, включая 5× reference volatility.
+
+---
+
+# 19. Инварианты безопасности экономики
+
+Основные экономические инварианты:
+
+## Conservation
+
+```text
+ClosingSystemCash
+=
+OpeningCapital
++
+ExternalIncome
+-
+ExternalExpense
+```
+
+Внутренние переводы не должны создавать деньги.
+
+## Internal mint ≠ profit
+
+```text
+ΔSyntheticSupply > 0
+does not imply
+ΔHardNAV > 0
+```
+
+## Capital flow ≠ profit
+
+```text
+Investor deposit
+→ external capital flow
+→ not operating income
+```
+
+## Rehypothecation ≠ unique wealth
+
+Один и тот же collateral нельзя считать несколько раз в HardNAV.
+
+## Gas must be paid
+
+В gas-aware экспериментах газ и execution costs вычитаются из результата.
+
+## Hedge is not free
+
+Hedge PnL, fees и funding costs отражаются в Economic Net Worth.
+
+---
+
+# 20. Ограничения и интерпретация результатов
+
+Этот репозиторий — **research / simulation project**.
+
+Он не является:
+
+- гарантированной торговой стратегией;
+- доказательством гарантированной доходности;
+- production bridge;
+- production OP Stack chain;
+- live autonomous fund;
+- системой с включенными private keys;
+- обещанием Wealth Floor в реальном рынке.
+
+Результаты могут зависеть от:
+
+- market model;
+- volatility assumptions;
+- fee assumptions;
+- gas assumptions;
+- liquidity assumptions;
+- slippage;
+- oracle design;
+- execution latency;
+- model risk.
+
+Особенно важно:
+
+> Низкий drawdown в симуляции не означает невозможность убытка на реальном рынке.
+
+---
+
+# 21. Архив и provenance
+
+Полный архив развития проекта сохранен внутри репозитория.
+
+## Original release provenance
+
+[docs/chat/RELEASE_PROVENANCE.md](docs/chat/RELEASE_PROVENANCE.md)
+
+Там сохранены SHA-256 исходных release ZIP:
+
+- SYNERGY_AGENT_ECONOMY_V2
+- SYNERGY_AGENT_ECONOMY_V3
+- SYNERGY_AGENT_CAPITAL_MARKETS_V4
+- SYNERGY_DUAL_CONTOUR_V5
+- SYNERGY_GLOBAL_STABILITY_V8
+- SYNERGY_V8_1_GAS_OPTIMIZED
+- RUBX_RUBZ_RELEASE
+- 2CHAN_PRINT_MONEY
+
+## Test history
+
+[docs/chat/TEST_MATRIX.md](docs/chat/TEST_MATRIX.md)
+
+## Accounting interpretation
+
+[docs/chat/REPRODUCIBILITY.md](docs/chat/REPRODUCIBILITY.md)
+
+## Full archive index
+
+[ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
+
+---
+
+# Research direction
+
+Следующие естественные направления развития:
+
+- regime-aware dynamic hedge ratio вместо почти фиксированного hedge;
+- optimization of return / drawdown / hedge cost frontier;
+- adaptive collateral haircuts;
+- endogenous interest-rate curve;
+- credit risk learned from agent history;
+- live opportunity ingestion in shadow mode;
+- real Base execution adapter с жесткими mandates;
+- oracle hardening;
+- bridge inventory reconciliation;
+- multi-agent treasury optimization;
+- rolling walk-forward evaluation;
+- Monte Carlo stress testing;
+- formal accounting invariants;
+- eventual production-chain implementation только после отдельного security/audit этапа.
+
+---
+
+## License / production note
+
+Перед реальным deployment необходимо отдельно определить:
+
+- software license;
+- token/legal structure;
+- oracle/security model;
+- bridge threat model;
+- private-key custody;
+- smart-contract audits;
+- operational permissions;
+- production risk limits.
+
+---
+
+**SYNERGY Agentic AI Economy** — это попытка исследовать не отдельного торгового бота, а целую автономную финансовую систему, где агенты, рынки, кредит, эмиссия, collateral, market-making, risk management и blockchain-like settlement работают как единая экономика — при строгом разделении между внутренними claims и реально существующим внешним богатством.
