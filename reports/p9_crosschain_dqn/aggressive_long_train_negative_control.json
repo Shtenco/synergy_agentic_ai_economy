@@ -1,0 +1,18 @@
+{
+  "mode": "DQN_MARKET_CB_LONG_TRAIN_EXPERIMENT",
+  "train_seeds": [1,2,3,4,5],
+  "blocks_per_seed": 800,
+  "holdout_seeds": [77,101,2026,42,31415],
+  "oos_blocks": 500,
+  "aggregate": {
+    "positive_alpha_count": 3,
+    "holdout_count": 5,
+    "mean_alpha_pct": 0.3389453456484359,
+    "median_alpha_pct": 0.2422271211504512,
+    "worst_alpha_pct": -0.9691286096304541,
+    "drawdown_better_count": 0,
+    "mean_drawdown_improvement_pct_points": -5.187474061190429,
+    "worst_dqn_drawdown_pct": 22.271652811945664
+  },
+  "interpretation": "Negative control: more training improved average alpha but materially worsened drawdown on every holdout seed. Not a production default."
+}
