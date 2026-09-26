@@ -7,6 +7,38 @@
 **Основная сеть-референс:** Base-style external market model + внутренний SYNERGY CHAIN simulation layer  
 **Главный принцип учета:** внутренняя эмиссия, recursive collateral и Gross TVL не могут автоматически считаться реальной прибылью системы.
 
+## Canonical DQN Agent Economic Mainline
+
+Основная интегрированная исследовательская линия теперь зафиксирована как **DQN AGENT ECONOMIC MAINLINE**:
+
+- полноценная Agent Economy: jobs, subcontracting, P2P credit, deposits, companies, investments, insurance, defaults/bankruptcy, evolution, policy research, Founder/Protocol fees;
+- P9 BTC/ETH/WETH ↔ SYNA/SYNR market layer;
+- DQN Market + DQN Central Bank;
+- v8 Global Stability Fund;
+- v8.1 gas-aware execution;
+- canonical walk-forward: **seed 77, 10,000 TRAIN blocks → frozen weights → 3,000 STRICT OOS blocks with no environment reset**.
+
+Главная метрика:
+
+```text
+TOTAL ECONOMIC WEALTH AFTER GAS
+=
+opening world wealth
++ real market PnL
++ hedge PnL
+- gas
+- execution fees
+- funding
++ agent external income
+- agent external expense
+```
+
+Канонический benchmark и методология:
+
+- [docs/DQN_AGENT_ECONOMIC_MAINLINE.md](docs/DQN_AGENT_ECONOMIC_MAINLINE.md)
+- [reports/dqn_agent_economic_mainline/seed77_10000_train_3000_oos.json](reports/dqn_agent_economic_mainline/seed77_10000_train_3000_oos.json)
+
+
 ---
 
 ## Содержание
