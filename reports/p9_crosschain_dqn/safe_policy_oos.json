@@ -1,0 +1,38 @@
+{
+  "mode": "DQN_MARKET_CB",
+  "train_seeds": [1,2,3],
+  "blocks_per_seed": 400,
+  "holdout_seeds": [77,101,2026,42,31415],
+  "oos_blocks": 300,
+  "architecture": {
+    "market_agents": 6,
+    "market_state": 20,
+    "market_actions": 32,
+    "cb_state": 12,
+    "cb_actions": 90,
+    "network": "64-64",
+    "gamma": 0.99,
+    "replay": 20000,
+    "batch": 48,
+    "target_sync": 500,
+    "update_every": 4
+  },
+  "holdouts": [
+    {"seed":77,"return_pct":15.61276894227641,"passive_return_pct":15.580792197252148,"alpha_vs_passive_pct":0.027666141074456085,"max_drawdown_pct":6.023518483135826,"passive_max_drawdown_pct":6.413237979209175},
+    {"seed":101,"return_pct":4.687347624647709,"passive_return_pct":4.591662518850281,"alpha_vs_passive_pct":0.09148444865783034,"max_drawdown_pct":10.0529250257533,"passive_max_drawdown_pct":10.265967570732693},
+    {"seed":2026,"return_pct":-6.324704298587125,"passive_return_pct":-5.959678696227256,"alpha_vs_passive_pct":-0.3881586082428945,"max_drawdown_pct":14.469775283546172,"passive_max_drawdown_pct":14.597288550552756},
+    {"seed":42,"return_pct":11.201080372411454,"passive_return_pct":11.21854698322091,"alpha_vs_passive_pct":-0.01570476443294444,"max_drawdown_pct":4.706608920549494,"passive_max_drawdown_pct":4.917396024455368},
+    {"seed":31415,"return_pct":2.814021837894898,"passive_return_pct":2.9235771697394553,"alpha_vs_passive_pct":-0.1064433775595175,"max_drawdown_pct":6.9855266667665505,"passive_max_drawdown_pct":7.018049819576355}
+  ],
+  "aggregate": {
+    "positive_alpha_count": 2,
+    "holdout_count": 5,
+    "mean_alpha_pct": -0.078231232100614,
+    "median_alpha_pct": -0.01570476443294444,
+    "worst_alpha_pct": -0.3881586082428945,
+    "drawdown_better_count": 5,
+    "mean_drawdown_improvement_pct_points": 0.19471711295500088,
+    "worst_dqn_drawdown_pct": 14.469775283546172
+  },
+  "interpretation": "Safe-policy candidate: drawdown improved on 5/5 holdout paths. Alpha is approximately flat/slightly negative; do not claim alpha engine."
+}
