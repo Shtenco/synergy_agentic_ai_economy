@@ -1,0 +1,53 @@
+{
+  "canonical_name": "DQN AGENT ECONOMIC MAINLINE",
+  "seed": 77,
+  "protocol": {
+    "train_blocks": 10000,
+    "strict_oos_blocks": 3000,
+    "continuous_no_reset": true,
+    "weights_frozen_at_block": 10000
+  },
+  "opening_world_wealth": 8700.0,
+  "train_end_wealth": 60836.536436576636,
+  "train_return_pct": 599.2705337537544,
+  "oos_start_wealth": 60836.536436576636,
+  "oos_end_wealth": 76723.08791842884,
+  "oos_return_pct": 26.113504174279,
+  "final_wealth": 76723.08791842884,
+  "full_return_pct": 781.874573775044,
+  "full_max_drawdown_pct": 0.042522726508031905,
+  "oos_max_drawdown_pct": 0.006219214700287079,
+  "costs": {
+    "gas_paid": 27.246239999999474,
+    "execution_fees": 1.551907509105491,
+    "funding": 0.4631950513787019
+  },
+  "hedging": {
+    "hedge_pnl": 137.5436339798826,
+    "hedge_batches": 901
+  },
+  "agent_economy": {
+    "jobs": 4333,
+    "loans": 1857,
+    "loan_default_rate": 0.026386645126548196,
+    "deposits": 1181,
+    "investments": 1000,
+    "insurance": 4331,
+    "net_external_income": 68060.0
+  },
+  "calibration": {
+    "target_v5_seed77_500_unhedged_dd_pct": 0.24538360228899997,
+    "achieved_pct": 0.24538360228777423,
+    "sigma_per_block": 0.0002889430335433008
+  },
+  "weights_sha256": "df4915285152b4e8089a6785f65870854c06800c5564317657e7b6e8a43b4aea",
+  "classification": "single-seed canonical walk-forward integration reconstruction",
+  "notes": [
+    "The 10000 TRAIN -> 3000 STRICT OOS path is continuous with no environment reset.",
+    "DQN weights are frozen at block 10000.",
+    "Internal loans, deposits, investments, insurance and subcontract transfers are not counted as external profit.",
+    "External jobs and company revenue increase economic wealth; explicit external business losses reduce it.",
+    "The v8/v8.1 Stability Fund and gas-aware policy constants are taken from repository documentation.",
+    "The combined local runner is an integration reconstruction, not byte-for-byte execution of the archived v8.1 engine."
+  ]
+}
