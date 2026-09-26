@@ -1,0 +1,51 @@
+name: Extract v8.1 reference
+
+on:
+  push:
+    branches:
+      - chore/extract-v81-reference
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract archived v8.1 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/v81
+          mkdir -p /tmp/v81 reference/v8_1
+          tar -xzf archive/latest_source_tests_docs.tar.gz -C /tmp/v81
+
+          find /tmp/v81 -type f | sort > reference/v8_1/ARCHIVE_FILE_LIST.txt
+
+          for target in run_stability_v8.py train_gas_policy.py render_stability_v8_report.py; do
+            match="$(find /tmp/v81 -type f -name "$target" | head -n 1 || true)"
+            if [ -n "$match" ]; then
+              cp "$match" "reference/v8_1/$target"
+            fi
+          done
+
+          find /tmp/v81 -type f \( -iname '*stability*' -o -iname '*gas*' \) | sort > reference/v8_1/STABILITY_GAS_FILES.txt
+
+          while IFS= read -r file; do
+            rel="${file#/tmp/v81/}"
+            case "$rel" in
+              *.py|*.json|*.md|*.csv|*.txt)
+                safe="$(echo "$rel" | tr '/' '__')"
+                cp "$file" "reference/v8_1/archive__${safe}"
+                ;;
+            esac
+          done < reference/v8_1/STABILITY_GAS_FILES.txt
+
+          git config user.name "synergy-archive-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add reference/v8_1
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: extract archived v8.1 gas-aware reference"
+            git push origin HEAD:chore/extract-v81-reference
+          fi
