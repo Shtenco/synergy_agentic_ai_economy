@@ -1,0 +1,58 @@
+{
+  "milestone": "P9 CROSS-CHAIN DQN ECONOMY",
+  "branch": "feat/p9-crosschain-dqn-economy",
+  "local_runtime": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.3.5"
+  },
+  "architecture": {
+    "market_agents": 6,
+    "market_pairs": ["SYNA/BTC","SYNA/ETH","SYNA/WETH","SYNR/BTC","SYNR/ETH","SYNR/WETH"],
+    "market_state": 20,
+    "market_actions": 32,
+    "cb_state": 12,
+    "cb_actions": 90,
+    "network": "64-64",
+    "gamma": 0.99,
+    "replay": 20000,
+    "batch": 48,
+    "target_sync": 500,
+    "update_every": 4
+  },
+  "safe_policy_training": {
+    "train_seeds": [1,2,3],
+    "blocks_per_seed": 400,
+    "holdout_seeds": [77,101,2026,42,31415],
+    "oos_blocks": 300,
+    "frozen_policy": true
+  },
+  "safe_policy_result": {
+    "positive_alpha_count": 2,
+    "holdout_count": 5,
+    "mean_alpha_pct": -0.078231232100614,
+    "median_alpha_pct": -0.01570476443294444,
+    "worst_alpha_pct": -0.3881586082428945,
+    "drawdown_better_count": 5,
+    "mean_drawdown_improvement_pct_points": 0.19471711295500088,
+    "worst_dqn_drawdown_pct": 14.469775283546172
+  },
+  "negative_control": {
+    "train_seeds": [1,2,3,4,5],
+    "blocks_per_seed": 800,
+    "oos_blocks": 500,
+    "mean_alpha_pct": 0.3389453456484359,
+    "drawdown_better_count": 0,
+    "worst_dqn_drawdown_pct": 22.271652811945664,
+    "status": "REJECTED_AS_DEFAULT"
+  },
+  "local_tests": {
+    "pytest": "4/4 PASS",
+    "self_test": "5/5 invariant groups PASS"
+  },
+  "safe_policy_weights": {
+    "sha256": "6dcaa4ebcc3da5a85d202b3a4ec0c6a2cb4202ff4b830f3748caf55bab30009b",
+    "bytes": 239557
+  },
+  "status": "TRAINED_AND_OOS_TESTED_RISK_CONTROLLER_NOT_ALPHA_PROVEN"
+}
