@@ -1,0 +1,46 @@
+{
+  "classification": "HISTORICAL REAL-BLOCK MARKET REPLAY WITH MODELED AGENT ECONOMY",
+  "ethereum_blocks": {
+    "start": 18251965,
+    "end": 18264964,
+    "count": 13000,
+    "contiguous": true
+  },
+  "protocol": {
+    "train_blocks": 10000,
+    "oos_blocks": 3000,
+    "no_reset": true,
+    "weights_frozen_after_train": true
+  },
+  "market_inputs": {
+    "eth_usd": "REAL on-chain WETH/USDC pool events, forward-filled by block",
+    "eth_btc": "REAL on-chain WETH/WBTC pool reserve ratio, forward-filled by block",
+    "btc_usd": "derived from real ETH/USD and ETH/BTC",
+    "weth_usd": "equal to real ETH/USD"
+  },
+  "gas_input": {
+    "type": "HISTORICAL CALIBRATION, NOT EXACT PER-BLOCK",
+    "gwei": 8.15,
+    "basis": "reported Ethereum median gas price on 2023-10-01"
+  },
+  "agent_economy": "MODELED from repository cadence/semantics; not historical marketplace logs",
+  "results": {
+    "train_end_wealth": 61161.718155063805,
+    "train_return_pct": 603.0082546559058,
+    "oos_start_wealth": 61161.718155063805,
+    "oos_end_wealth": 76853.24573218211,
+    "oos_return_pct": 25.655799167275607,
+    "oos_max_drawdown_pct": 0.006241719956057157,
+    "full_max_drawdown_pct": 0.03961639630327696,
+    "final_market_component": 8698.720732182126,
+    "final_agent_net_external_income": 68154.525,
+    "total_gas_paid": 0.0,
+    "execution_fees": 0.0,
+    "funding": 0.11477899763428916,
+    "hedge_pnl": 18.24365818354699,
+    "final_eth_usd": 1666.9656637134863,
+    "final_btc_usd": 27849.59924680666,
+    "weights_sha256": "862a1dcc37105f71ea187e5c7645476a8c1801cc850b408c7b042bd84f432b06"
+  },
+  "status": "PARTIAL_REAL_BLOCK_GREEN_MARKET_INPUTS_EXACT_GAS_AND_REAL_JOB_FLOW_STILL_REQUIRED"
+}
