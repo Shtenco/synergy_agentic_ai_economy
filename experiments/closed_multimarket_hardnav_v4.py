@@ -349,12 +349,18 @@ def fetch_price_series(blocks: list[dict]) -> tuple[dict[str, list[float]], dict
             ages.append(age)
         if any(value <= 0 or not math.isfinite(value) for value in values):
             raise RuntimeError(f"Invalid aligned price for {asset}")
+        min_age = min(ages)
         max_age = max(ages)
+        future_violations = sum(1 for age in ages if age < 0)
+        if future_violations:
+            raise RuntimeError(f"{asset} no-lookahead violation: {future_violations} future candles")
         if max_age > 3600:
             raise RuntimeError(f"{asset} candle staleness too large: {max_age}s")
         aligned[asset] = values
         provenance[asset]["candle_rows"] = len(series)
+        provenance[asset]["min_alignment_age_seconds"] = min_age
         provenance[asset]["max_forward_fill_staleness_seconds"] = max_age
+        provenance[asset]["future_candle_violations"] = future_violations
         provenance[asset]["alignment"] = "last fully completed 1-minute candle; causal forward-fill"
         provenance[asset]["price_role"] = (
             "redeemable_1_to_1_underlying"
@@ -672,6 +678,11 @@ def main() -> None:
     assert len(prices) == len(BASE_ASSETS) == 10
     assert not report["market_inputs"]["factor_mapped_assets"]
     assert report["protocol"]["hedge_anchor_selection"]["oos_used_for_selection"] is False
+    assert all(
+        source["future_candle_violations"] == 0
+        and source["min_alignment_age_seconds"] >= 0
+        for source in report["market_inputs"]["provenance"].values()
+    )
     expected_fee = modeled_bridge_volume * float(
         MultiMarketConfig().bridge_fee_bps + MultiMarketConfig().swap_fee_bps
     ) / 10_000
