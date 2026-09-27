@@ -603,7 +603,7 @@ def main() -> None:
             "base_fee_gwei_max": max(base_fees),
             "gas_utilization_mean": statistics.fmean(gas_util),
             "gas_utilization_max": max(gas_util),
-            "transaction_priority_tip": "not invented; hypothetical rebalance uses exact historical base fee only",
+            "transaction_priority_tip": "not invented; hypothetical rebalance uses exact historical base fee only",\n            "strategy_gas_units": "MODELED_FROM_MULTIMARKET_CONFIG_PER_ACTIVE_LEG",\n            "strategy_gas_price": "EXACT_HISTORICAL_BASE_FEE_ONLY_NO_PRIORITY_TIP",\n            "strategy_gas_cost_classification": "HYBRID_EXACT_BASE_FEE_MODELED_GAS_UNITS",
         },
         "hardnav": {
             "start": navs[0],
@@ -646,7 +646,7 @@ def main() -> None:
                 - v3["hardnav"]["full_return_pct"]
             ),
         },
-        "status": "V4_REAL_MARKET_EXACT_BLOCK_GAS_GREEN_MODELED_BRIDGE_FLOW_REMAINS",
+        "status": "V4_REAL_MARKET_EXACT_BLOCK_FEE_ENVIRONMENT_GREEN_MODELED_BRIDGE_FLOW_REMAINS",
     }
 
     report_path = REPORT_DIR / "seed77_10000_train_3000_oos.json"
