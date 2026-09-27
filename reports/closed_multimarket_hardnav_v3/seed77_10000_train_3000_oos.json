@@ -1,0 +1,69 @@
+{
+  "canonical_name": "CLOSED MULTI-MARKET HARDNAV V3",
+  "seed": 77,
+  "protocol": {
+    "start_hardnav": 8700.0,
+    "train_blocks": 10000,
+    "oos_blocks": 3000,
+    "continuous_no_reset": true,
+    "hedge_anchor_selected_on_train_only": 0.9954415206283125,
+    "artificial_agent_external_income": 0.0
+  },
+  "market_stack": {
+    "protected_reserve_usdc": 3700.0,
+    "protocol_owned_external_amm_nav": 2500.0,
+    "inventory_bridge_nav": 2500.0,
+    "external_assets": ["WETH","cbBTC","VVV","VIRTUAL","AERO","cbETH","USDe","cbXRP","TOSHI","MORPHO"],
+    "internal_core": ["RUBX","RUBZ","USDC"],
+    "internal_mirrors": ["RUBX","RUBZ","USDC","WETH","cbBTC","VVV","VIRTUAL","AERO","cbETH","USDe","cbXRP","TOSHI","MORPHO"],
+    "settlement_tokens": ["SYNA","SYNR"],
+    "p9_routes": ["SYNA/BTC","SYNA/ETH","SYNA/WETH","SYNR/BTC","SYNR/ETH","SYNR/WETH"],
+    "bridge_asset_share": 0.18,
+    "external_pool_fee_bps": 30,
+    "bridge_fee_bps": 10,
+    "swap_fee_bps": 30
+  },
+  "hardnav": {
+    "start": 8700.0,
+    "train_end": 8962.68090124832,
+    "oos_end": 9041.154577569347,
+    "train_return_pct": 3.0193207040036807,
+    "oos_return_pct": 0.8755603059581896,
+    "full_return_pct": 3.9213169835557116,
+    "train_max_drawdown_pct": 0.00033302520252576073,
+    "oos_max_drawdown_pct": 0.0005341692063787207,
+    "full_max_drawdown_pct": 0.0005341692063787207,
+    "train_step_std": 0.02095471162079738,
+    "oos_step_std": 0.020656867748116068,
+    "negative_step_fraction": 0.023078698361412416
+  },
+  "external_sources": {
+    "bridge_volume": 84911.06,
+    "bridge_and_swap_fee_revenue": 339.64424000000133,
+    "external_amm_fee_revenue": 1.7473295750271591,
+    "hedge_pnl": -1.0027668736784,
+    "funding_cost": 0.17014686587868638
+  },
+  "closed_agent_economy": {
+    "internal_gdp": 1147.539440625865,
+    "productive_capital": 306.2993345090268,
+    "gross_transaction_volume": 14585.40468110532,
+    "credit_outstanding_end": 0.0,
+    "protocol_treasury_internal": 73.97436063917065,
+    "syna_velocity": 0.1405160767100431,
+    "synr_velocity": 1.3478015723835115,
+    "defaults": 55,
+    "inflation_pct": -2.00072753293663,
+    "verified_useful_work": 1024.4867812211362
+  },
+  "accounting": {
+    "internal_mint_burn_in_hardnav": false,
+    "internal_cpmm_fees_in_hardnav": false,
+    "recursive_collateral_in_hardnav": false,
+    "external_bridge_fees_in_hardnav": true,
+    "external_amm_fees_in_hardnav": true,
+    "external_hedge_pnl_in_hardnav": true
+  },
+  "classification": "INTEGRATION RECONSTRUCTION: real ETH/BTC historical path, factor-mapped remaining Base assets, modeled external bridge volume calibrated to v5 reference",
+  "status": "VERY_SMOOTH_HARDNAV_GROWTH_RECONSTRUCTION_MORE_REAL_ASSET_FEEDS_AND_EXACT_GAS_STILL_REQUIRED"
+}
