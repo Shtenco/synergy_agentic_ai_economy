@@ -28,6 +28,7 @@ V4_CSV = Path(os.environ.get(
     str(ROOT / "data" / "real_backtest_v4" / "ethereum_23544921_23557920_exact_gas_real_prices.csv"),
 ))
 FLOW_CSV = ROOT / "data" / "real_external_flow_v5" / "observed_flow_by_eth_block.csv"
+FLOW_MANIFEST = ROOT / "data" / "real_external_flow_v5" / "manifest.json"
 REPORT_DIR = ROOT / "reports" / "closed_multimarket_hardnav_v5"
 
 
@@ -126,6 +127,9 @@ def select_anchor_observed(blocks, prices, bridge_flow, dex_flow):
 def main():
     blocks, prices = load_v4_inputs()
     bridge_flow, dex_flow, unresolved = load_observed_flow(blocks)
+    flow_manifest = json.loads(FLOW_MANIFEST.read_text(encoding="utf-8"))
+    scan_coverage = float(flow_manifest.get("aerodrome_scan_coverage_fraction", 1.0))
+    failed_pool_scans = int(flow_manifest.get("aerodrome_failed_pool_scans", 0))
     anchor, raw_anchor = select_anchor_observed(blocks, prices, bridge_flow, dex_flow)
     engine, navs, steps = run_path_observed(
         blocks, prices, bridge_flow, dex_flow, anchor=anchor
@@ -157,6 +161,9 @@ def main():
             ),
             "unresolved_events": sum(unresolved),
             "classification": "OBSERVED_EXTERNAL_FLOW_LOWER_BOUND",
+            "aerodrome_scan_coverage_fraction": scan_coverage,
+            "aerodrome_failed_pool_scans": failed_pool_scans,
+            "coverage_claim": "LOWER_BOUND_ONLY; NOT FULL_MARKET_COVERAGE",
             "fee_capture_classification": "COUNTERFACTUAL_SYNERGY_FEE_CAPTURE_NOT_HISTORICALLY_EARNED",
             "fee_schedule_bps": {"bridge": 10, "dex_swap": 30},
         },
