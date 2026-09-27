@@ -96,7 +96,6 @@ def fetch_xatu_blocks() -> tuple[list[dict], list[str]]:
                 "block_date_time",
                 "block_number",
                 "gas_used",
-                "gas_limit",
                 "base_fee_per_gas",
             ],
         )
@@ -109,7 +108,6 @@ def fetch_xatu_blocks() -> tuple[list[dict], list[str]]:
                         "block_number": n,
                         "timestamp": _epoch_seconds(data["block_date_time"][i]),
                         "gas_used": int(data["gas_used"][i]),
-                        "gas_limit": int(data["gas_limit"][i]),
                         "base_fee_per_gas": int(data["base_fee_per_gas"][i]),
                     }
                 )
@@ -122,9 +120,82 @@ def fetch_xatu_blocks() -> tuple[list[dict], list[str]]:
         raise RuntimeError("Xatu block endpoints mismatch")
     if any(b != a + 1 for a, b in zip(numbers, numbers[1:])):
         raise RuntimeError("Xatu blocks are not contiguous")
-    if any(row["gas_limit"] <= 0 or row["gas_used"] < 0 or row["base_fee_per_gas"] <= 0 for row in rows):
+    if any(row["gas_used"] < 0 or row["base_fee_per_gas"] <= 0 for row in rows):
         raise RuntimeError("Invalid exact gas fields in Xatu rows")
     return rows, urls
+
+
+def fetch_rpc_gas_limits(blocks: list[dict]) -> dict:
+    endpoint = "https://ethereum-rpc.publicnode.com"
+    by_number = {row["block_number"]: row for row in blocks}
+    for start in range(0, len(blocks), 100):
+        batch = blocks[start : start + 100]
+        payload = [
+            {
+                "jsonrpc": "2.0",
+                "method": "eth_getBlockByNumber",
+                "params": [hex(row["block_number"]), False],
+                "id": row["block_number"],
+            }
+            for row in batch
+        ]
+        last: Exception | None = None
+        for attempt in range(6):
+            try:
+                response = SESSION.post(endpoint, json=payload, timeout=60)
+                if response.status_code == 429:
+                    time.sleep(min(2 ** attempt, 15))
+                    continue
+                response.raise_for_status()
+                data = response.json()
+                if not isinstance(data, list):
+                    raise RuntimeError(f"non-batch RPC response: {data}")
+                got = {
+                    int(item["id"]): item.get("result")
+                    for item in data
+                    if "id" in item
+                }
+                for row in batch:
+                    n = row["block_number"]
+                    item = got.get(n)
+                    if not item:
+                        raise RuntimeError(f"missing RPC block {n}")
+                    timestamp = int(item["timestamp"], 16)
+                    gas_used = int(item["gasUsed"], 16)
+                    base_fee = int(item["baseFeePerGas"], 16)
+                    gas_limit = int(item["gasLimit"], 16)
+                    if timestamp != row["timestamp"]:
+                        raise RuntimeError(
+                            f"timestamp mismatch {n}: Xatu={row['timestamp']} RPC={timestamp}"
+                        )
+                    if gas_used != row["gas_used"]:
+                        raise RuntimeError(
+                            f"gasUsed mismatch {n}: Xatu={row['gas_used']} RPC={gas_used}"
+                        )
+                    if base_fee != row["base_fee_per_gas"]:
+                        raise RuntimeError(
+                            f"baseFee mismatch {n}: Xatu={row['base_fee_per_gas']} RPC={base_fee}"
+                        )
+                    if gas_limit <= 0:
+                        raise RuntimeError(f"invalid gasLimit {n}: {gas_limit}")
+                    by_number[n]["gas_limit"] = gas_limit
+                break
+            except Exception as exc:
+                last = exc
+                time.sleep(min(2 ** attempt, 15))
+        else:
+            raise RuntimeError(
+                f"RPC gasLimit batch failed at {batch[0]['block_number']}: {last!r}"
+            )
+        time.sleep(0.05)
+    if any(row.get("gas_limit", 0) <= 0 for row in blocks):
+        raise RuntimeError("Missing exact gasLimit after RPC hydration")
+    return {
+        "source": endpoint,
+        "method": "eth_getBlockByNumber",
+        "batch_size": 100,
+        "cross_checked_fields": ["timestamp", "gasUsed", "baseFeePerGas"],
+    }
 
 
 def _iso(ts: int) -> str:
@@ -535,6 +606,7 @@ def main() -> None:
     bridge_volume_per_block = modeled_bridge_volume / BLOCK_COUNT
 
     blocks, xatu_urls = fetch_xatu_blocks()
+    rpc_gas_provenance = fetch_rpc_gas_limits(blocks)
     prices, price_provenance = fetch_price_series(blocks)
     csv_path = write_block_csv(blocks, prices)
 
@@ -602,8 +674,11 @@ def main() -> None:
             "csv": str(csv_path.relative_to(ROOT)),
         },
         "gas_input": {
-            "source": "EthPandaOps Xatu canonical_execution_block public Parquet",
-            "exact_fields": ["block_date_time", "gas_used", "gas_limit", "base_fee_per_gas"],
+            "source": "EthPandaOps Xatu canonical_execution_block public Parquet + Ethereum PublicNode archive JSON-RPC",
+            "xatu_exact_fields": ["block_date_time", "gas_used", "base_fee_per_gas"],
+            "rpc_exact_fields": ["gasLimit"],
+            "rpc_provenance": rpc_gas_provenance,
+            "cross_source_validation": "timestamp/gasUsed/baseFeePerGas must match Xatu exactly",
             "base_fee_gwei_min": min(base_fees),
             "base_fee_gwei_median": statistics.median(base_fees),
             "base_fee_gwei_max": max(base_fees),
