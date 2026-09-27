@@ -7,69 +7,56 @@
 **Основная сеть-референс:** Base-style external market model + внутренний SYNERGY CHAIN simulation layer  
 **Главный принцип учета:** внутренняя эмиссия, recursive collateral и Gross TVL не могут автоматически считаться реальной прибылью системы.
 
-## Canonical Closed Multi-Market HardNAV V3
+## Canonical Closed Multi-Market HardNAV V4
 
-The preferred HardNAV benchmark now combines the **closed agent economy** with the repository's restored v3 → v8.1 external market stack:
+Канонический внешний HardNAV benchmark теперь — **V4 real-market historical replay**:
 
-- opening HardNAV stays **8,700**;
-- **3,700** protected reserve;
-- **2,500** protocol-owned external AMM liquidity;
-- **2,500** Inventory Bridge custody;
-- external Base-style assets: `WETH, cbBTC, VVV, VIRTUAL, AERO, cbETH, USDe, cbXRP, TOSHI, MORPHO`;
-- internal monetary core: `RUBX / RUBZ / USDC`;
-- shadow mirror of all 13 v5 assets;
-- P9 settlement tokens: `SYNA / SYNR`;
-- zero artificial external agent-job income;
-- internal mint/burn, internal CPMM fees and recursive collateral remain excluded from HardNAV;
-- externally realizable bridge fees / AMM fees / hedge PnL enter HardNAV after funding, gas and execution costs.
+- Ethereum blocks **23,544,921 → 23,557,920**;
+- ровно **13,000 contiguous blocks**;
+- **10,000 TRAIN → FREEZE → 3,000 STRICT OOS**, без reset;
+- реальные block-aligned цены всех 10 внешних активов: `WETH, cbBTC, VVV, VIRTUAL, AERO, cbETH, USDe, cbXRP, TOSHI, MORPHO`;
+- `factor_mapped_assets = []`;
+- для каждого актива `future_candle_violations = 0`;
+- causal alignment: только последняя полностью завершённая 1-minute candle;
+- Ethereum `timestamp / gas_used / base_fee_per_gas` из Xatu, `gasLimit` из archive JSON-RPC с cross-check;
+- strategy gas units остаются моделируемыми и считаются по реальному historical base fee;
+- hedge anchor выбирается **только по TRAIN** и затем замораживается.
 
-Canonical seed-77 walk-forward:
-
-```text
-TRAIN: blocks 1–10,000
-hedge anchor selected on TRAIN only: 99.544152%
-
-STRICT OOS: blocks 10,001–13,000
-no reset
-```
-
-Result:
+Canonical seed-77 result:
 
 ```text
 HardNAV start                 8,700.000000
-TRAIN end                     8,962.680901
-OOS end                       9,041.154578
+TRAIN end                     8,982.337719
+OOS end                       9,066.313803
 
-TRAIN return                    +3.019321%
-OOS return                      +0.875560%
-Full return                     +3.921317%
+TRAIN return                    +3.245261%
+OOS return                      +0.934902%
+Full return                     +4.210503%
 
-TRAIN max DD                     0.000333%
-OOS max DD                       0.000534%
-Full max DD                      0.000534%
+TRAIN max DD                     0.173472%
+OOS max DD                       0.029083%
+Full max DD                      0.173472%
 
-Modeled external bridge volume 84,911.06
-Bridge + swap fee revenue         339.644240
-External AMM fee revenue            1.747330
-Hedge PnL                          -1.002767
-Funding                            -0.170147
+TRAIN-only hedge anchor          1.1120974217
+Negative-step fraction           7.3231%
+Rebalance batches                1
+
+External AMM fee revenue          7.808553
+Hedge PnL                       321.618094
+Funding cost                      0.171644
+Execution cost                    0.087996
+Strategy gas cost                 1.436006
 ```
 
-Internal economy remains a separate accounting dimension:
+Важный результат перехода V3 → V4: доходность сохранилась и немного выросла, но сверхгладкая траектория V3 **не подтвердилась** на реальных 10-asset paths. Реальный full max DD вырос с ~0.000534% до **0.173472%**.
 
-```text
-Internal GDP                  1,147.539441
-Productive Capital              306.299335
-Gross Transaction Volume     14,585.404681
-Verified Useful Work          1,024.486781
-```
-
-Important data classification: ETH/BTC use the historical path already used by the real-block replay; the remaining Base assets are currently factor-mapped to that path and external bridge volume is modeled/calibrated to the recorded v5 reference. This is an integration reconstruction, not a claim of live guaranteed returns.
+Единственный крупный оставшийся synthetic layer в V4 — gross bridge flow **84,911.06**, который всё ещё классифицирован как `MODELED_V5_CALIBRATED_REFERENCE_UNCHANGED_FROM_V3`. Следующий benchmark V5 заменяет его observed block-by-block Across/Aerodrome external flow и не должен считать общий внешний market volume фактически заработанной комиссией SYNERGY.
 
 See:
 
-- [docs/CLOSED_MULTIMARKET_HARDNAV_V3.md](docs/CLOSED_MULTIMARKET_HARDNAV_V3.md)
-- [reports/closed_multimarket_hardnav_v3/seed77_10000_train_3000_oos.json](reports/closed_multimarket_hardnav_v3/seed77_10000_train_3000_oos.json)
+- [docs/CLOSED_MULTIMARKET_HARDNAV_V4.md](docs/CLOSED_MULTIMARKET_HARDNAV_V4.md)
+- [reports/closed_multimarket_hardnav_v4/seed77_10000_train_3000_oos.json](reports/closed_multimarket_hardnav_v4/seed77_10000_train_3000_oos.json)
+- [data/real_backtest_v4/manifest.json](data/real_backtest_v4/manifest.json)
 
 ## Canonical Closed DQN Agent Economic Mainline
 
