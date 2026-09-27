@@ -88,6 +88,10 @@ def build():
     with across_path.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
             stats["across_raw_rows"] += 1
+            corridor = str(r.get("selected_eth_base_corridor", "")).strip().lower()
+            if corridor not in {"true", "1", "yes"}:
+                stats["across_non_eth_base_corridor_not_counted"] += 1
+                continue
             if r["event"] not in DEPOSIT_EVENTS:
                 stats["across_non_deposit_rows_not_counted"] += 1
                 continue
