@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import os
 import json
 import math
 import statistics
@@ -22,7 +23,10 @@ from experiments.closed_multimarket_hardnav_v4 import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-V4_CSV = ROOT / "data" / "real_backtest_v4" / "ethereum_23544921_23557920_exact_gas_real_prices.csv"
+V4_CSV = Path(os.environ.get(
+    "SYNERGY_V4_CSV",
+    str(ROOT / "data" / "real_backtest_v4" / "ethereum_23544921_23557920_exact_gas_real_prices.csv"),
+))
 FLOW_CSV = ROOT / "data" / "real_external_flow_v5" / "observed_flow_by_eth_block.csv"
 REPORT_DIR = ROOT / "reports" / "closed_multimarket_hardnav_v5"
 
