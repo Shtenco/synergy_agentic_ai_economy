@@ -184,6 +184,12 @@ def build():
             })
 
     total = bridge_usd + dex_usd
+    aero_raw = raw_manifest.get("aerodrome", {})
+    coverage = float(aero_raw.get("scan_coverage_fraction", 1.0))
+    failed_pool_scans = int(aero_raw.get("failed_pool_scans", 0))
+    if not (0.0 < coverage <= 1.0):
+        raise RuntimeError(f"invalid Aerodrome scan coverage: {coverage}")
+
     manifest = {
         "classification": "BASE_OBSERVED_EXTERNAL_FLOW_LOWER_BOUND",
         "raw_evidence": raw_manifest,
@@ -198,6 +204,9 @@ def build():
         "observed_bridge_volume_usd": bridge_usd,
         "observed_dex_swap_volume_usd": dex_usd,
         "observed_external_volume_usd": total,
+        "aerodrome_scan_coverage_fraction": coverage,
+        "aerodrome_failed_pool_scans": failed_pool_scans,
+        "coverage_claim": "LOWER_BOUND_ONLY; NOT FULL_MARKET_COVERAGE",
         "nonzero_eth_blocks": sum((a["bridge_usd"] + a["dex_usd"]) > 0 for a in acc),
         "stats": dict(stats),
         "rows": len(v4),
