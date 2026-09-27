@@ -7,7 +7,63 @@
 **Основная сеть-референс:** Base-style external market model + внутренний SYNERGY CHAIN simulation layer  
 **Главный принцип учета:** внутренняя эмиссия, recursive collateral и Gross TVL не могут автоматически считаться реальной прибылью системы.
 
-## Canonical Closed Multi-Market HardNAV V3
+## Canonical Closed Multi-Market HardNAV V4
+
+V4 является текущим каноническим HardNAV benchmark. Он сохраняет экономику V3, но заменяет factor-mapped market path на реальные исторические inputs для всех 10 рыночных ног и использует exact Ethereum block environment.
+
+Протокол:
+
+```text
+Ethereum blocks 23,544,921 → 23,557,920
+13,000 contiguous blocks
+
+TRAIN: 10,000
+TRAIN-only hedge anchor: 1.1120974216643325
+FREEZE
+STRICT OOS: 3,000
+NO RESET
+```
+
+Результат:
+
+```text
+HardNAV start                  8,700.000000
+TRAIN end                      8,982.337719
+OOS end                        9,066.313803
+
+TRAIN return                     +3.245261%
+OOS return                       +0.934902%
+Full return                      +4.210503%
+
+TRAIN max DD                      0.173472%
+OOS max DD                        0.029083%
+Full max DD                       0.173472%
+
+Negative-step fraction            7.3231%
+Rebalance batches                 1
+```
+
+Историческая доказательность V4:
+
+- 13,000 последовательных Ethereum blocks;
+- 10 real market legs: `WETH, cbBTC, VVV, VIRTUAL, AERO, cbETH, USDe, cbXRP, TOSHI, MORPHO`;
+- `factor_mapped_assets = []`;
+- для всех 10 серий `future_candle_violations = 0`;
+- causal alignment использует только последнюю полностью завершённую минутную свечу;
+- Xatu даёт реальные `timestamp / gas_used / base_fee_per_gas`;
+- `gasLimit` берётся из archive JSON-RPC и cross-check'ится с Xatu;
+- strategy gas units остаются моделируемыми и не называются exact;
+- internal mint/burn, internal CPMM fees и recursive collateral не входят в HardNAV.
+
+Важно: V4 **ещё не является полностью историческим external-flow replay**. Последний synthetic input — `84,911.06` modeled bridge volume — пока сохранён неизменным. Именно его заменяет V5 observed-flow line.
+
+См.:
+
+- [reports/closed_multimarket_hardnav_v4/seed77_10000_train_3000_oos.json](reports/closed_multimarket_hardnav_v4/seed77_10000_train_3000_oos.json)
+- [data/real_backtest_v4/manifest.json](data/real_backtest_v4/manifest.json)
+- [docs/HISTORICAL_EXTERNAL_FLOW_V5.md](docs/HISTORICAL_EXTERNAL_FLOW_V5.md)
+
+## Historical Closed Multi-Market HardNAV V3
 
 The preferred HardNAV benchmark now combines the **closed agent economy** with the repository's restored v3 → v8.1 external market stack:
 
