@@ -44,8 +44,13 @@ jobs:
           assert r["protocol"]["hedge_anchor_selection"]["oos_used_for_selection"] is False
           assert r["market_inputs"]["factor_mapped_assets"] == []
           assert len(r["market_inputs"]["provenance"]) == 10
-          assert set(r["gas_input"]["exact_fields"]) == {
-              "block_date_time", "gas_used", "gas_limit", "base_fee_per_gas"
+          assert set(r["gas_input"]["xatu_exact_fields"]) == {
+              "block_date_time", "gas_used", "base_fee_per_gas"
+          }
+          assert set(r["gas_input"]["rpc_exact_fields"]) == {"gasLimit"}
+          assert r["gas_input"]["rpc_provenance"]["method"] == "eth_getBlockByNumber"
+          assert set(r["gas_input"]["rpc_provenance"]["cross_checked_fields"]) == {
+              "timestamp", "gasUsed", "baseFeePerGas"
           }
           with csv_path.open(newline="", encoding="utf-8") as f:
               rows = list(csv.DictReader(f))
