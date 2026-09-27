@@ -7,6 +7,70 @@
 **Основная сеть-референс:** Base-style external market model + внутренний SYNERGY CHAIN simulation layer  
 **Главный принцип учета:** внутренняя эмиссия, recursive collateral и Gross TVL не могут автоматически считаться реальной прибылью системы.
 
+## Canonical Closed Multi-Market HardNAV V3
+
+The preferred HardNAV benchmark now combines the **closed agent economy** with the repository's restored v3 → v8.1 external market stack:
+
+- opening HardNAV stays **8,700**;
+- **3,700** protected reserve;
+- **2,500** protocol-owned external AMM liquidity;
+- **2,500** Inventory Bridge custody;
+- external Base-style assets: `WETH, cbBTC, VVV, VIRTUAL, AERO, cbETH, USDe, cbXRP, TOSHI, MORPHO`;
+- internal monetary core: `RUBX / RUBZ / USDC`;
+- shadow mirror of all 13 v5 assets;
+- P9 settlement tokens: `SYNA / SYNR`;
+- zero artificial external agent-job income;
+- internal mint/burn, internal CPMM fees and recursive collateral remain excluded from HardNAV;
+- externally realizable bridge fees / AMM fees / hedge PnL enter HardNAV after funding, gas and execution costs.
+
+Canonical seed-77 walk-forward:
+
+```text
+TRAIN: blocks 1–10,000
+hedge anchor selected on TRAIN only: 99.544152%
+
+STRICT OOS: blocks 10,001–13,000
+no reset
+```
+
+Result:
+
+```text
+HardNAV start                 8,700.000000
+TRAIN end                     8,962.680901
+OOS end                       9,041.154578
+
+TRAIN return                    +3.019321%
+OOS return                      +0.875560%
+Full return                     +3.921317%
+
+TRAIN max DD                     0.000333%
+OOS max DD                       0.000534%
+Full max DD                      0.000534%
+
+Modeled external bridge volume 84,911.06
+Bridge + swap fee revenue         339.644240
+External AMM fee revenue            1.747330
+Hedge PnL                          -1.002767
+Funding                            -0.170147
+```
+
+Internal economy remains a separate accounting dimension:
+
+```text
+Internal GDP                  1,147.539441
+Productive Capital              306.299335
+Gross Transaction Volume     14,585.404681
+Verified Useful Work          1,024.486781
+```
+
+Important data classification: ETH/BTC use the historical path already used by the real-block replay; the remaining Base assets are currently factor-mapped to that path and external bridge volume is modeled/calibrated to the recorded v5 reference. This is an integration reconstruction, not a claim of live guaranteed returns.
+
+See:
+
+- [docs/CLOSED_MULTIMARKET_HARDNAV_V3.md](docs/CLOSED_MULTIMARKET_HARDNAV_V3.md)
+- [reports/closed_multimarket_hardnav_v3/seed77_10000_train_3000_oos.json](reports/closed_multimarket_hardnav_v3/seed77_10000_train_3000_oos.json)
+
 ## Canonical Closed DQN Agent Economic Mainline
 
 The preferred benchmark is now the **closed agent economy**:
