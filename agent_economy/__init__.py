@@ -10,6 +10,15 @@ from .endogenous import EndogenousDemandEngine, ProductiveAsset, VerifiedWorkRec
 from .evolution import EvolutionEngine
 from .ledger import InsufficientFunds, Ledger, LedgerEntry
 from .models import AdaptiveStrategy, AgentGenome, AgentState, Company, ExecutionMandate
+from .multimarket import (
+    ALL_INTERNAL_ASSETS,
+    BASE_ASSETS,
+    CORE_INTERNAL_POOLS,
+    MIRRORED_ASSETS,
+    P9_SETTLEMENT_POOLS,
+    MultiMarketConfig,
+    MultiMarketHardNavEngine,
+)
 from .protocols import (
     AgentIdentityCard,
     MachinePaymentRequest,
@@ -29,6 +38,13 @@ __all__ = [
     "EndogenousDemandEngine",
     "ProductiveAsset",
     "VerifiedWorkReceipt",
+    "MultiMarketConfig",
+    "MultiMarketHardNavEngine",
+    "BASE_ASSETS",
+    "MIRRORED_ASSETS",
+    "ALL_INTERNAL_ASSETS",
+    "CORE_INTERNAL_POOLS",
+    "P9_SETTLEMENT_POOLS",
     "AdaptiveStrategy",
     "AgentGenome",
     "AgentState",
