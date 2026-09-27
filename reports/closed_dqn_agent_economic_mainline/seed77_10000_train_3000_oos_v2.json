@@ -1,0 +1,73 @@
+{
+  "canonical_name": "CLOSED DQN AGENT ECONOMIC MAINLINE V2",
+  "seed": 77,
+  "protocol": {
+    "start_hardnav": 8700.0,
+    "train_blocks": 10000,
+    "oos_blocks": 3000,
+    "freeze_at": 10000,
+    "continuous_no_reset": true,
+    "artificial_external_job_inflow": 0.0,
+    "artificial_external_company_revenue": 0.0,
+    "external_business_loss": 0.0,
+    "economic_mode": "closed"
+  },
+  "hardnav": {
+    "start": 8700.0,
+    "train_end": 8710.318523219841,
+    "oos_end": 8710.407762810306,
+    "oos_return_pct": 0.0010245272917153159,
+    "full_max_drawdown_pct": 0.006235604097926117,
+    "oos_max_drawdown_pct": 0.00014356278227323216,
+    "min": 8699.788329837236,
+    "max": 8710.413449461998
+  },
+  "internal_gdp": 1147.539440625865,
+  "productive_capital": 306.2993345090268,
+  "gross_transaction_volume": 14585.40468110532,
+  "credit_outstanding": {
+    "end": 0.0,
+    "mean": 0.25185961081405717,
+    "peak": 4.904812316823616
+  },
+  "agent_wealth_distribution": {
+    "gini": 0.6760831118939308,
+    "min": 0.2308807063064628,
+    "median": 12.974312198512148,
+    "max": 161.77242696031593
+  },
+  "protocol_treasury": 73.97436063917065,
+  "syna_velocity": 0.14051607671004313,
+  "synr_velocity": 1.3478015723835117,
+  "defaults": {
+    "total": 55,
+    "loan": 0,
+    "deposit": 55
+  },
+  "inflation": {
+    "end_pct": -2.0007275329366303,
+    "min_pct": -2.0007275329366303,
+    "max_pct": 0.005999299952108572,
+    "monetary_guard": "approximately +/-2 percent supply corridor"
+  },
+  "verified_useful_work": 1024.4867812211362,
+  "verified_work_receipts": 3289,
+  "internal_jobs": 3289,
+  "active_agents": 24,
+  "system_cash_conservation": {
+    "opening_internal_claim_cash": 720.0,
+    "closing_internal_claim_cash": 719.9999999999966,
+    "gap": -3.410605131648481e-12
+  },
+  "execution": {
+    "gas_paid": 0.0,
+    "execution_fees": 0.0,
+    "funding": 0.2568885014070373,
+    "hedge_pnl": -167.07953721453669,
+    "hedge_batches": 0
+  },
+  "market_input": "historical real Ethereum block numbers plus real on-chain ETH/BTC price path; gas calibrated from prior historical replay",
+  "weights_sha256": "eb5420789e8ef2286809d7386905f34da055ec15ce104b95be9efbee65341d51",
+  "classification": "CLOSED-ECONOMY CANONICAL INTEGRATION RECONSTRUCTION",
+  "status": "CLOSED_ECONOMY_GREEN_ACCOUNTING_MONETARY_AND_DISTRIBUTION_HARDENING_CONTINUES"
+}

@@ -5,6 +5,8 @@ portable and auditable. Cash mutations are routed through :class:`Ledger`.
 """
 
 from .engine import AgentEconomy, EconomyConfig, EconomyReport
+from .closed_engine import ClosedAgentEconomy, ClosedEconomyConfig, ClosedEconomyReport
+from .endogenous import EndogenousDemandEngine, ProductiveAsset, VerifiedWorkReceipt
 from .evolution import EvolutionEngine
 from .ledger import InsufficientFunds, Ledger, LedgerEntry
 from .models import AdaptiveStrategy, AgentGenome, AgentState, Company, ExecutionMandate
@@ -21,6 +23,12 @@ __all__ = [
     "AgentEconomy",
     "EconomyConfig",
     "EconomyReport",
+    "ClosedAgentEconomy",
+    "ClosedEconomyConfig",
+    "ClosedEconomyReport",
+    "EndogenousDemandEngine",
+    "ProductiveAsset",
+    "VerifiedWorkReceipt",
     "AdaptiveStrategy",
     "AgentGenome",
     "AgentState",

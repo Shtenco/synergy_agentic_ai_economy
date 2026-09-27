@@ -1,0 +1,16 @@
+{
+  "name": "CLOSED DQN MONETARY NEGATIVE CONTROL V1",
+  "seed": 77,
+  "train_blocks": 10000,
+  "oos_blocks": 3000,
+  "artificial_external_income": 0,
+  "hardnav_oos_end": 8707.764259743364,
+  "full_max_drawdown_pct": 0.004770277057375427,
+  "internal_gdp": 1147.539440625865,
+  "productive_capital": 306.2993345090268,
+  "gross_transaction_volume": 14585.40468110532,
+  "inflation_rate_pct": 13.502979923590663,
+  "status": "REJECTED_AS_CANONICAL",
+  "reason": "DQN emission intent was insufficiently bounded; cumulative token supply inflation reached +13.5 percent despite closed cash conservation.",
+  "replacement": "V2 approximately +/-2 percent monetary safety corridor"
+}
