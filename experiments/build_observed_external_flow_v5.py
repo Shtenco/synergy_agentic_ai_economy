@@ -185,8 +185,25 @@ def build():
 
     total = bridge_usd + dex_usd
     aero_raw = raw_manifest.get("aerodrome", {})
-    coverage = float(aero_raw.get("scan_coverage_fraction", 1.0))
-    failed_pool_scans = int(aero_raw.get("failed_pool_scans", 0))
+    # V5 may use either the broad pricable-pool scan or the intentionally
+    # narrower USDC/WETH/AERO core-pair lower bound.  Coverage is always
+    # measured inside the declared scope; scope itself is carried separately.
+    coverage = float(
+        aero_raw.get(
+            "scan_coverage_fraction",
+            aero_raw.get("core_scan_coverage_fraction", 1.0),
+        )
+    )
+    failed_pool_scans = int(
+        aero_raw.get(
+            "failed_pool_scans",
+            aero_raw.get("failed_core_pool_scans", 0),
+        )
+    )
+    dex_scope = aero_raw.get(
+        "coverage_claim",
+        "LOWER_BOUND_ONLY; NOT FULL_MARKET_COVERAGE",
+    )
     if not (0.0 < coverage <= 1.0):
         raise RuntimeError(f"invalid Aerodrome scan coverage: {coverage}")
 
@@ -207,6 +224,7 @@ def build():
         "aerodrome_scan_coverage_fraction": coverage,
         "aerodrome_failed_pool_scans": failed_pool_scans,
         "coverage_claim": "LOWER_BOUND_ONLY; NOT FULL_MARKET_COVERAGE",
+        "dex_scope_claim": dex_scope,
         "nonzero_eth_blocks": sum((a["bridge_usd"] + a["dex_usd"]) > 0 for a in acc),
         "stats": dict(stats),
         "rows": len(v4),
