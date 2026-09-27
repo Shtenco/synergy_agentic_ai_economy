@@ -57,16 +57,20 @@ def load_observed_flow(blocks):
     with FLOW_CSV.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     by_block = {int(r["block_number"]): r for r in rows}
-    out = []
+    bridge = []
+    dex = []
+    unresolved = []
     for b in blocks:
         r = by_block.get(b["block_number"])
         if r is None:
             raise RuntimeError(f"missing observed-flow row for {b['block_number']}")
-        out.append(float(r["observed_external_volume_usd"]))
-    return out
+        bridge.append(float(r["observed_bridge_volume_usd"]))
+        dex.append(float(r["observed_dex_swap_volume_usd"]))
+        unresolved.append(int(r["unresolved_events"]))
+    return bridge, dex, unresolved
 
 
-def run_path_observed(blocks, prices, observed_flow, *, anchor, count=None, enable_rebalance=True):
+def run_path_observed(blocks, prices, bridge_flow, dex_flow, *, anchor, count=None, enable_rebalance=True):
     n = count if count is not None else len(blocks)
     cfg = replace(MultiMarketConfig(), hedge_anchor=D(str(anchor)))
     engine = MultiMarketHardNavEngine(cfg)
@@ -75,7 +79,18 @@ def run_path_observed(blocks, prices, observed_flow, *, anchor, count=None, enab
 
     for i in range(n):
         engine.apply_external_market_move(price_ratios(prices, i))
-        engine.record_external_bridge_flow(gross_volume=D(str(observed_flow[i])))
+        # Counterfactual SYNERGY fee capture on observed historical demand:
+        # bridge deposits pay only bridge fee; DEX swaps pay only swap fee.
+        engine.record_external_bridge_flow(
+            gross_volume=D(str(bridge_flow[i])),
+            bridge_fee_bps=cfg.bridge_fee_bps,
+            swap_fee_bps=D("0"),
+        )
+        engine.record_external_bridge_flow(
+            gross_volume=D(str(dex_flow[i])),
+            bridge_fee_bps=D("0"),
+            swap_fee_bps=cfg.swap_fee_bps,
+        )
         if enable_rebalance:
             engine.rebalance_external_risk(
                 target_hedge_ratio=D(str(anchor)),
@@ -89,12 +104,12 @@ def run_path_observed(blocks, prices, observed_flow, *, anchor, count=None, enab
     return engine, navs, np.diff(np.asarray(navs, dtype=np.float64))
 
 
-def select_anchor_observed(blocks, prices, flow):
+def select_anchor_observed(blocks, prices, bridge_flow, dex_flow):
     zero_engine, zero_nav, zero_steps = run_path_observed(
-        blocks, prices, flow, anchor=0.0, count=TRAIN_BLOCKS, enable_rebalance=False
+        blocks, prices, bridge_flow, dex_flow, anchor=0.0, count=TRAIN_BLOCKS, enable_rebalance=False
     )
     one_engine, one_nav, one_steps = run_path_observed(
-        blocks, prices, flow, anchor=1.0, count=TRAIN_BLOCKS, enable_rebalance=False
+        blocks, prices, bridge_flow, dex_flow, anchor=1.0, count=TRAIN_BLOCKS, enable_rebalance=False
     )
     a = zero_steps
     b = one_steps - zero_steps
@@ -110,9 +125,11 @@ def select_anchor_observed(blocks, prices, flow):
 
 def main():
     blocks, prices = load_v4_inputs()
-    flow = load_observed_flow(blocks)
-    anchor, raw_anchor = select_anchor_observed(blocks, prices, flow)
-    engine, navs, steps = run_path_observed(blocks, prices, flow, anchor=anchor)
+    bridge_flow, dex_flow, unresolved = load_observed_flow(blocks)
+    anchor, raw_anchor = select_anchor_observed(blocks, prices, bridge_flow, dex_flow)
+    engine, navs, steps = run_path_observed(
+        blocks, prices, bridge_flow, dex_flow, anchor=anchor
+    )
 
     train_end = navs[TRAIN_BLOCKS]
     oos_end = navs[-1]
@@ -132,9 +149,16 @@ def main():
             },
         },
         "observed_external_flow": {
-            "total_usd": sum(flow),
-            "nonzero_blocks": sum(v > 0 for v in flow),
+            "bridge_volume_usd": sum(bridge_flow),
+            "dex_swap_volume_usd": sum(dex_flow),
+            "total_usd": sum(bridge_flow) + sum(dex_flow),
+            "nonzero_blocks": sum(
+                (b + d) > 0 for b, d in zip(bridge_flow, dex_flow)
+            ),
+            "unresolved_events": sum(unresolved),
             "classification": "OBSERVED_EXTERNAL_FLOW_LOWER_BOUND",
+            "fee_capture_classification": "COUNTERFACTUAL_SYNERGY_FEE_CAPTURE_NOT_HISTORICALLY_EARNED",
+            "fee_schedule_bps": {"bridge": 10, "dex_swap": 30},
         },
         "hardnav": {
             "start": navs[0],
