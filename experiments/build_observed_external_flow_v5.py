@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import bisect
 import csv
+import os
 import json
 from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-V4_CSV = ROOT / "data" / "real_backtest_v4" / "ethereum_23544921_23557920_exact_gas_real_prices.csv"
+V4_CSV = Path(os.environ.get(
+    "SYNERGY_V4_CSV",
+    str(ROOT / "data" / "real_backtest_v4" / "ethereum_23544921_23557920_exact_gas_real_prices.csv"),
+))
 RAW_DIR = ROOT / "data" / "real_external_flow_v5" / "raw"
 OUT_DIR = ROOT / "data" / "real_external_flow_v5"
 OUT_CSV = OUT_DIR / "observed_flow_by_eth_block.csv"
