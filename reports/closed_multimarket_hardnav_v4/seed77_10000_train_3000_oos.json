@@ -1,6 +1,6 @@
 {
   "canonical_name": "CLOSED MULTI-MARKET HARDNAV V4",
-  "classification": "REAL HISTORICAL BLOCK-ALIGNED PRICES FOR ALL 10 MARKET LEGS + EXACT ETHEREUM BLOCK ENVIRONMENT (XATU timestamp/gas_used/base_fee + archive RPC gasLimit) + MODELED STRATEGY GAS UNITS; MODELED V5-CALIBRATED BRIDGE FLOW",
+  "classification": "REAL HISTORICAL BLOCK-ALIGNED PRICES FOR ALL 10 MARKET LEGS + EXACT ETHEREUM BLOCK ENVIRONMENT; MODELED V5-CALIBRATED BRIDGE FLOW REMAINS",
   "seed": 77,
   "ethereum_blocks": {
     "start": 23544921,
@@ -8,26 +8,10 @@
     "count": 13000,
     "contiguous": true,
     "timestamp_start": 1760070203,
-    "timestamp_end": 1760227199,
-    "xatu_partitions": [
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23544000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23545000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23546000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23547000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23548000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23549000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23550000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23551000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23552000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23553000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23554000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23555000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23556000.parquet",
-      "https://data.ethpandaops.io/xatu/mainnet/databases/default/canonical_execution_block/1000/23557000.parquet"
-    ]
+    "timestamp_end": 1760227199
   },
   "protocol": {
-    "start_hardnav": 8700,
+    "start_hardnav": 8700.0,
     "train_blocks": 10000,
     "oos_blocks": 3000,
     "continuous_no_reset": true,
@@ -35,209 +19,59 @@
     "hedge_anchor_selection": {
       "method": "TRAIN-only analytic variance minimizer for affine HardNAV step process",
       "raw_anchor": 1.1120974216643325,
-      "clipped_range": [
-        0.8,
-        1.2
-      ],
+      "clipped_range": [0.8, 1.2],
       "selected_anchor": 1.1120974216643325,
       "oos_used_for_selection": false
     },
     "weights_frozen_after_train": true,
-    "artificial_agent_external_income": 0
+    "artificial_agent_external_income": 0.0
   },
   "market_inputs": {
-    "assets": [
-      "WETH",
-      "cbBTC",
-      "VVV",
-      "VIRTUAL",
-      "AERO",
-      "cbETH",
-      "USDe",
-      "cbXRP",
-      "TOSHI",
-      "MORPHO"
-    ],
+    "assets": ["WETH","cbBTC","VVV","VIRTUAL","AERO","cbETH","USDe","cbXRP","TOSHI","MORPHO"],
     "factor_mapped_assets": [],
-    "provenance": {
-      "WETH": {
-        "asset": "WETH",
-        "source": "Coinbase Exchange ETH-USD",
-        "attempted": [
-          "Coinbase ETH-USD",
-          "Binance ETHUSDT"
-        ],
-        "candle_rows": 2620,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 60,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "redeemable_1_to_1_underlying"
-      },
-      "cbBTC": {
-        "asset": "cbBTC",
-        "source": "Coinbase Exchange BTC-USD",
-        "attempted": [
-          "Coinbase BTC-USD",
-          "Binance BTCUSDT"
-        ],
-        "candle_rows": 2620,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 60,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "redeemable_1_to_1_underlying"
-      },
-      "VVV": {
-        "asset": "VVV",
-        "source": "Coinbase Exchange VVV-USD",
-        "attempted": [
-          "Coinbase VVV-USD",
-          "Binance VVVUSDT"
-        ],
-        "candle_rows": 870,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 1500,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "direct_market_price"
-      },
-      "VIRTUAL": {
-        "asset": "VIRTUAL",
-        "source": "Binance Vision spot VIRTUALUSDT",
-        "attempted": [
-          "Coinbase VIRTUAL-USD",
-          "Binance VIRTUALUSDT"
-        ],
-        "candle_rows": 2632,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 0,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "direct_market_price"
-      },
-      "AERO": {
-        "asset": "AERO",
-        "source": "Coinbase Exchange AERO-USD",
-        "attempted": [
-          "Coinbase AERO-USD",
-          "Binance AEROUSDT"
-        ],
-        "candle_rows": 2478,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 180,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "direct_market_price"
-      },
-      "cbETH": {
-        "asset": "cbETH",
-        "source": "Coinbase Exchange CBETH-USD",
-        "attempted": [
-          "Coinbase CBETH-USD",
-          "Coinbase CBETH-USDC"
-        ],
-        "candle_rows": 1196,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 660,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "direct_market_price"
-      },
-      "USDe": {
-        "asset": "USDe",
-        "source": "Binance Vision spot USDEUSDT",
-        "attempted": [
-          "Coinbase USDE-USD",
-          "Coinbase USDE-USDC",
-          "Bybit USDEUSDT",
-          "Binance USDEUSDT"
-        ],
-        "candle_rows": 2632,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 0,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "direct_market_price"
-      },
-      "cbXRP": {
-        "asset": "cbXRP",
-        "source": "Coinbase Exchange XRP-USD",
-        "attempted": [
-          "Coinbase XRP-USD underlying",
-          "Binance XRPUSDT underlying"
-        ],
-        "candle_rows": 2620,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 60,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "redeemable_1_to_1_underlying"
-      },
-      "TOSHI": {
-        "asset": "TOSHI",
-        "source": "Coinbase Exchange TOSHI-USD",
-        "attempted": [
-          "Coinbase TOSHI-USD",
-          "Coinbase TOSHI-USDC",
-          "Binance TOSHIUSDT"
-        ],
-        "candle_rows": 2594,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 120,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "direct_market_price"
-      },
-      "MORPHO": {
-        "asset": "MORPHO",
-        "source": "Coinbase Exchange MORPHO-USD",
-        "attempted": [
-          "Coinbase MORPHO-USD",
-          "Coinbase MORPHO-USDC",
-          "Binance MORPHOUSDT"
-        ],
-        "candle_rows": 2111,
-        "min_alignment_age_seconds": 0,
-        "max_forward_fill_staleness_seconds": 360,
-        "future_candle_violations": 0,
-        "alignment": "last fully completed 1-minute candle; causal backward lookup/forward-fill",
-        "price_role": "direct_market_price"
-      }
+    "price_granularity_seconds": 60,
+    "block_alignment": "last fully completed candle only; causal forward-fill",
+    "public_evidence": {
+      "repository": "Shtenco/synergychain.github.io",
+      "branch": "ci/v4-runner-smoke",
+      "workflow_run_id": 36316047443,
+      "artifact_id": 10931131509,
+      "artifact_name": "v4-public-historical-inputs",
+      "artifact_digest": "sha256:980eb7fd4c0f02ed106629f578ea25fe28865f23e58aa7af07cb090043cce911",
+      "csv_filename": "ethereum_23544921_23557920_exact_gas_real_prices.csv",
+      "csv_sha256": "6eb4ea7d3c6fadeebc2349e3a3f530bf1f4b50eb4c375127b41cd3e6ada8be0e",
+      "csv_rows": 13000
     },
-    "alignment": "last fully completed 1-minute candle; causal only"
+    "provenance_summary": {
+      "WETH": {"source":"Coinbase Exchange ETH-USD","max_staleness_seconds":60,"future_candle_violations":0},
+      "cbBTC": {"source":"Coinbase Exchange BTC-USD","max_staleness_seconds":60,"future_candle_violations":0},
+      "VVV": {"source":"Coinbase Exchange VVV-USD","max_staleness_seconds":1500,"future_candle_violations":0},
+      "VIRTUAL": {"source":"Binance Vision spot VIRTUALUSDT","max_staleness_seconds":0,"future_candle_violations":0},
+      "AERO": {"source":"Coinbase Exchange AERO-USD","max_staleness_seconds":180,"future_candle_violations":0},
+      "cbETH": {"source":"Coinbase Exchange CBETH-USD","max_staleness_seconds":660,"future_candle_violations":0},
+      "USDe": {"source":"Binance Vision spot USDEUSDT","max_staleness_seconds":0,"future_candle_violations":0},
+      "cbXRP": {"source":"Coinbase Exchange XRP-USD","max_staleness_seconds":60,"future_candle_violations":0},
+      "TOSHI": {"source":"Coinbase Exchange TOSHI-USD","max_staleness_seconds":120,"future_candle_violations":0},
+      "MORPHO": {"source":"Coinbase Exchange MORPHO-USD","max_staleness_seconds":360,"future_candle_violations":0}
+    }
   },
   "gas_input": {
-    "xatu_exact_fields": [
-      "block_date_time",
-      "gas_used",
-      "base_fee_per_gas"
-    ],
-    "rpc_exact_fields": [
-      "gasLimit"
-    ],
-    "rpc_provenance": {
-      "source": "https://ethereum-rpc.publicnode.com",
-      "method": "eth_getBlockByNumber",
-      "batch_size": 100,
-      "cross_checked_fields": [
-        "timestamp",
-        "gasUsed",
-        "baseFeePerGas"
-      ]
-    },
-    "cross_source_validation": "timestamp/gasUsed/baseFeePerGas must match Xatu exactly",
+    "source": "EthPandaOps Xatu canonical_execution_block + Ethereum PublicNode archive JSON-RPC",
+    "xatu_exact_fields": ["block_date_time","gas_used","base_fee_per_gas"],
+    "rpc_exact_fields": ["gasLimit"],
+    "cross_source_validation": "timestamp/gasUsed/baseFeePerGas matched Xatu exactly",
     "base_fee_gwei_min": 0.094656795,
     "base_fee_gwei_median": 0.772982044,
     "base_fee_gwei_max": 547.228205708,
     "gas_utilization_mean": 0.5050798075989549,
     "gas_utilization_max": 0.9999942888888889,
+    "transaction_priority_tip": "not invented; hypothetical rebalance uses exact historical base fee only",
     "strategy_gas_units": "MODELED_FROM_MULTIMARKET_CONFIG_PER_ACTIVE_LEG",
     "strategy_gas_price": "EXACT_HISTORICAL_BASE_FEE_ONLY_NO_PRIORITY_TIP",
     "strategy_gas_cost_classification": "HYBRID_EXACT_BASE_FEE_MODELED_GAS_UNITS"
   },
   "hardnav": {
-    "start": 8700,
+    "start": 8700.0,
     "train_end": 8982.337719136283,
     "oos_start": 8982.337719136283,
     "oos_end": 9066.313802863284,
@@ -262,69 +96,25 @@
     "gas_cost": 1.43600577590211,
     "rebalance_batches": 1
   },
-  "closed_agent_economy": {
-    "internal_gdp": 1147.539440625865,
-    "productive_capital": 306.2993345090268,
-    "gross_transaction_volume": 14585.40468110532,
-    "credit_outstanding_end": 0,
-    "protocol_treasury_internal": 73.97436063917065,
-    "syna_velocity": 0.1405160767100431,
-    "synr_velocity": 1.3478015723835115,
-    "defaults": 55,
-    "inflation_pct": -2.00072753293663,
-    "verified_useful_work": 1024.4867812211362,
-    "classification": "UNCHANGED_DETERMINISTIC_V3_INTERNAL_LAYER_NOT_ADDED_TO_HARDNAV"
-  },
-  "accounting": {
-    "internal_mint_burn_in_hardnav": false,
-    "internal_cpmm_fees_in_hardnav": false,
-    "recursive_collateral_in_hardnav": false,
-    "external_bridge_fees_in_hardnav": true,
-    "external_amm_fees_in_hardnav": true,
-    "external_hedge_pnl_in_hardnav": true
-  },
-  "final_snapshot": {
-    "hardnav": 9066.313802863284,
-    "raw_hardnav": 9066.313802863284,
-    "net_external_capital_flow": 0,
-    "high_water_mark": 9066.313802863284,
-    "wealth_floor": 9052.714332158988,
-    "drawdown": 0,
-    "protected_usdc": 4039.64424,
-    "external_protocol_fee_revenue": 339.64424,
-    "external_amm_fee_revenue": 7.808553498290258,
-    "hedge_pnl": 321.61809378899983,
-    "funding_cost": 0.17164420244736991,
-    "execution_cost": 0.08799607512472517,
-    "gas_cost": 1.43600577590211,
-    "rebalance_batches": 1,
-    "bridge_asset_share": {
-      "WETH": 0.1778016514254881,
-      "cbBTC": 0.17812682189436307,
-      "VVV": 0.1701012071698572,
-      "VIRTUAL": 0.1768167967608631,
-      "AERO": 0.16790907229162366,
-      "cbETH": 0.17749045701143965,
-      "USDe": 0.18005909484001228,
-      "cbXRP": 0.1767777704550691,
-      "TOSHI": 0.18209549313459125,
-      "MORPHO": 0.18144315164825242
-    }
-  },
   "comparison_to_v3": {
     "v3_full_return_pct": 3.9213169835557116,
     "v3_oos_return_pct": 0.8755603059581896,
     "v3_full_max_drawdown_pct": 0.0005341692063787207,
-    "v4_minus_v3_full_return_pct_points": 0.2891864976314551
+    "v3_anchor": 0.9954415206283125,
+    "v4_minus_v3_full_return_pct_points": 0.2891864976314551,
+    "v4_minus_v3_oos_return_pct_points": 0.059342014048047176,
+    "v4_minus_v3_full_max_dd_pct_points": 0.1729381430144339
   },
-  "evidence": {
-    "public_collector_run_id": 36316047443,
-    "public_artifact_id": 10931131509,
-    "public_artifact_digest": "sha256:980eb7fd4c0f02ed106629f578ea25fe28865f23e58aa7af07cb090043cce911",
-    "csv_sha256": "6eb4ea7d3c6fadeebc2349e3a3f530bf1f4b50eb4c375127b41cd3e6ada8be0e",
-    "manifest_sha256": "20ab0a7e355968283ca0437bab77f15d8b73ef7755b07d24a7f9e4813d10b29a",
-    "report_sha256": "b76ce762678f88a60a530c794aa6d67ac71b758b85952d75f3a7dda2ad4ec11e",
-    "repeat_run_same_result": true
+  "evidence_gates": {
+    "block_count_13000": true,
+    "contiguous_blocks": true,
+    "ten_real_market_legs": true,
+    "factor_mapped_assets_empty": true,
+    "future_candle_violations_zero": true,
+    "min_alignment_age_nonnegative": true,
+    "max_staleness_le_3600": true,
+    "train_only_anchor": true,
+    "continuous_no_reset": true
   },
-  "status": "V4_REAL_MARKET_EXACT_BLOCK_FEE_ENVIRONMENT_GREEN_MODELED_BRIDGE_FLOW_REMAINS"
+  "status": "V4_EVIDENCE_GREEN_WITH_MODELED_BRIDGE_VOLUME_REMAINING"
 }
