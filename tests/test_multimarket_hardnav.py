@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from agent_economy.multimarket import (
+    D,
     ALL_INTERNAL_ASSETS,
     BASE_ASSETS,
     CORE_INTERNAL_POOLS,
