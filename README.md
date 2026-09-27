@@ -7,6 +7,43 @@
 **Основная сеть-референс:** Base-style external market model + внутренний SYNERGY CHAIN simulation layer  
 **Главный принцип учета:** внутренняя эмиссия, recursive collateral и Gross TVL не могут автоматически считаться реальной прибылью системы.
 
+## Canonical Closed DQN Agent Economic Mainline
+
+The preferred benchmark is now the **closed agent economy**:
+
+- zero artificial external job inflow;
+- zero artificial external company revenue;
+- zero random external business loss;
+- agents and companies create endogenous demand and pay each other through the internal ledger;
+- internal GDP, productive capital and transaction volume are reported separately from HardNAV;
+- DQN Market + DQN Central Bank + Stability Fund remain the risk/monetary layer;
+- canonical walk-forward: **seed 77, 10,000 TRAIN → freeze → 3,000 STRICT OOS, no reset**.
+
+Canonical V2 highlights:
+
+```text
+HardNAV start                 8,700.000000
+HardNAV OOS end               8,710.407763
+Full max DD                   0.006236%
+OOS max DD                    0.000144%
+
+Internal GDP                  1,147.539441
+Productive Capital              306.299335
+Gross Transaction Volume     14,585.404681
+Verified Useful Work          1,024.486781
+Protocol Treasury                73.974361
+SYNA velocity                    0.140516
+SYNR velocity                    1.347802
+Closed cash conservation gap   -3.41e-12
+```
+
+See:
+
+- [docs/CLOSED_DQN_AGENT_ECONOMIC_MAINLINE.md](docs/CLOSED_DQN_AGENT_ECONOMIC_MAINLINE.md)
+- [reports/closed_dqn_agent_economic_mainline/seed77_10000_train_3000_oos_v2.json](reports/closed_dqn_agent_economic_mainline/seed77_10000_train_3000_oos_v2.json)
+
+The older open-economy DQN mainline is retained below for historical reproducibility, not as the preferred autonomous-economy benchmark.
+
 ## Canonical DQN Agent Economic Mainline
 
 Основная интегрированная исследовательская линия теперь зафиксирована как **DQN AGENT ECONOMIC MAINLINE**:
