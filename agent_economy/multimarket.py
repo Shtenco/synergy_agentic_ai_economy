@@ -273,8 +273,8 @@ class MultiMarketHardNavEngine:
         principal = D(str(net_principal_flow))
         if volume < 0:
             raise ValueError("gross_volume must be non-negative")
-        bridge_bps = bridge_fee_bps or self.config.bridge_fee_bps
-        swap_bps = swap_fee_bps or self.config.swap_fee_bps
+        bridge_bps = self.config.bridge_fee_bps if bridge_fee_bps is None else bridge_fee_bps
+        swap_bps = self.config.swap_fee_bps if swap_fee_bps is None else swap_fee_bps
         fee = volume * (bridge_bps + swap_bps) / D("10000")
 
         # Principal changes raw cash but is backed out from capital-adjusted
