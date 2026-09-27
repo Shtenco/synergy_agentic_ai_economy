@@ -84,3 +84,24 @@ def test_gas_aware_rebalance_is_bounded_and_fail_closed():
     assert isinstance(result, bool)
     assert e.gas_cost >= 0
     assert e.execution_cost >= 0
+
+
+def test_explicit_zero_fee_legs_are_respected() -> None:
+    engine = MultiMarketHardNavEngine()
+    start = engine.capital_adjusted_hardnav()
+
+    bridge_fee = engine.record_external_bridge_flow(
+        gross_volume=D("1000"),
+        bridge_fee_bps=D("10"),
+        swap_fee_bps=D("0"),
+    )
+    swap_fee = engine.record_external_bridge_flow(
+        gross_volume=D("1000"),
+        bridge_fee_bps=D("0"),
+        swap_fee_bps=D("30"),
+    )
+
+    assert bridge_fee == D("1")
+    assert swap_fee == D("3")
+    assert engine.external_protocol_fee_revenue == D("4")
+    assert engine.capital_adjusted_hardnav() == start + D("4")
