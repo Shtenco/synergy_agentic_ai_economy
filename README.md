@@ -1231,3 +1231,38 @@ Hedge PnL, fees и funding costs отражаются в Economic Net Worth.
 ---
 
 **SYNERGY Agentic AI Economy** — это попытка исследовать не отдельного торгового бота, а целую автономную финансовую систему, где агенты, рынки, кредит, эмиссия, collateral, market-making, risk management и blockchain-like settlement работают как единая экономика — при строгом разделении между внутренними claims и реально существующим внешним богатством.
+
+
+<!-- SYNERGY-FEDERATION-PASSPORT:START -->
+---
+
+## 🧭 SYNERGY federation passport
+
+**Домен:** 🤖 Agentic AI economy  
+**Архитектурный родитель:** [`synergy_agi_nexus`](https://github.com/Shtenco/synergy_agi_nexus)  
+**Архитектурный корень:** [`synergy_system`](https://github.com/Shtenco/synergy_system)
+
+```mermaid
+flowchart LR
+    SYS[🧭 synergy_system] --> P[synergy_agi_nexus]
+    P --> THIS[synergy_agentic_ai_economy]
+    THIS --> E[📦 Evidence / outputs]
+```
+
+Архитектурная стрелка — это карта федерации, а не автоматически подтверждённая runtime dependency.
+
+### Единый стандарт
+
+Каждый проект должен документировать реальную проблему, реализацию, тесты, evidence, ограничения, file map, воспроизводимость, roadmap и границы утверждений. Это тот же принцип, который используется в `dlp_solver`.
+
+### Навигация
+
+- [📚 Атлас всех 75 репозиториев](https://github.com/Shtenco/synergy_system/blob/main/docs/SYNERGY_REPOSITORY_ATLAS.md)
+- [🧾 Машиночитаемый registry](https://github.com/Shtenco/synergy_system/blob/main/registry/SYNERGY_REPOSITORIES.json)
+- [🧭 SYNERGY SYSTEM](https://github.com/Shtenco/synergy_system)
+
+### Evidence rule
+
+`GREEN` означает только воспроизводимо подтверждённый тезис. Гипотеза, benchmark без корректного протокола, архитектурная диаграмма или красивый экономический цикл сами по себе GREEN не дают.
+
+<!-- SYNERGY-FEDERATION-PASSPORT:END -->
