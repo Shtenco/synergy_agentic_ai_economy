@@ -1266,3 +1266,38 @@ flowchart LR
 `GREEN` означает только воспроизводимо подтверждённый тезис. Гипотеза, benchmark без корректного протокола, архитектурная диаграмма или красивый экономический цикл сами по себе GREEN не дают.
 
 <!-- SYNERGY-FEDERATION-PASSPORT:END -->
+
+---
+
+# 🤖 Глубокий доказательный паспорт Agentic AI Economy
+
+## Реальный canonical benchmark stack
+
+В `main` уже есть closed-economy engine, real-market V4 replay, P9 cross-chain DQN, negative controls, release manifest и отдельные reports/tests.
+
+```mermaid
+flowchart LR
+    HIST[Real historical blocks] --> ALIGN[Causal alignment]
+    ALIGN --> TRAIN[10k TRAIN]
+    TRAIN --> FREEZE[🔒 Freeze]
+    FREEZE --> OOS[3k strict OOS]
+    OOS --> NAV[HardNAV report]
+    NAV --> NEG[Negative controls]
+```
+
+## Самая важная эпистемическая граница
+
+V4 уже заменил factor-mapped asset paths реальными block-aligned ценами 10 активов, но gross bridge flow всё ещё моделируется. Поэтому V4 — сильный historical replay, но не полный observed execution replay всех внешних потоков.
+
+## Evidence anchors
+
+- `data/real_backtest_v4/manifest.json`;
+- `reports/closed_multimarket_hardnav_v4/seed77_10000_train_3000_oos.json`;
+- `reports/closed_dqn_agent_economic_mainline/v1_unbounded_emission_negative_control.json`;
+- `tests/test_multimarket_hardnav.py`;
+- `tests/test_closed_agent_economy.py`;
+- `.github/workflows/historical-block-v4.yml`.
+
+## Следующий рубеж
+
+observed bridge/Aerodrome flows → exact transaction-level execution model → gas units from actual route implementation → multiple frozen OOS periods → independent reproduction.
