@@ -1,0 +1,18 @@
+name: recursive-collateral-evm-v2
+on:
+  push:
+    branches: ["experiment/recursive-collateral-evm-v1"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+      - name: Forge tests
+        working-directory: evm_recursive_v2
+        run: forge test -vvv
