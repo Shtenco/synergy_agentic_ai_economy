@@ -100,7 +100,7 @@ The older open-economy DQN mainline is retained below for historical reproducibi
 Основная интегрированная исследовательская линия теперь зафиксирована как **DQN AGENT ECONOMIC MAINLINE**:
 
 - полноценная Agent Economy: jobs, subcontracting, P2P credit, deposits, companies, investments, insurance, defaults/bankruptcy, evolution, policy research, Founder/Protocol fees;
-- P9 BTC/ETH/WETH ↔ SYNA/SYNR market layer;
+- P9 BTC/ETH/WETH  SYNA/SYNR market layer;
 - DQN Market + DQN Central Bank;
 - v8 Global Stability Fund;
 - v8.1 gas-aware execution;
@@ -286,9 +286,9 @@ flowchart TB
 Внутреннее ядро строится вокруг треугольника:
 
 ```text
-RUBX ↔ USDC
-RUBZ ↔ USDC
-RUBX ↔ RUBZ
+RUBX  USDC
+RUBZ  USDC
+RUBX  RUBZ
 ```
 
 Идеологически:
@@ -1236,17 +1236,17 @@ Hedge PnL, fees и funding costs отражаются в Economic Net Worth.
 <!-- SYNERGY-FEDERATION-PASSPORT:START -->
 ---
 
-## 🧭 SYNERGY federation passport
+##  SYNERGY federation passport
 
-**Домен:** 🤖 Agentic AI economy  
+**Домен:**  Agentic AI economy  
 **Архитектурный родитель:** [`synergy_agi_nexus`](https://github.com/Shtenco/synergy_agi_nexus)  
 **Архитектурный корень:** [`synergy_system`](https://github.com/Shtenco/synergy_system)
 
 ```mermaid
 flowchart LR
-    SYS[🧭 synergy_system] --> P[synergy_agi_nexus]
+    SYS[ synergy_system] --> P[synergy_agi_nexus]
     P --> THIS[synergy_agentic_ai_economy]
-    THIS --> E[📦 Evidence / outputs]
+    THIS --> E[ Evidence / outputs]
 ```
 
 Архитектурная стрелка — это карта федерации, а не автоматически подтверждённая runtime dependency.
@@ -1257,9 +1257,9 @@ flowchart LR
 
 ### Навигация
 
-- [📚 Атлас всех 75 репозиториев](https://github.com/Shtenco/synergy_system/blob/main/docs/SYNERGY_REPOSITORY_ATLAS.md)
-- [🧾 Машиночитаемый registry](https://github.com/Shtenco/synergy_system/blob/main/registry/SYNERGY_REPOSITORIES.json)
-- [🧭 SYNERGY SYSTEM](https://github.com/Shtenco/synergy_system)
+- [ Атлас всех 75 репозиториев](https://github.com/Shtenco/synergy_system/blob/main/docs/SYNERGY_REPOSITORY_ATLAS.md)
+- [ Машиночитаемый registry](https://github.com/Shtenco/synergy_system/blob/main/registry/SYNERGY_REPOSITORIES.json)
+- [ SYNERGY SYSTEM](https://github.com/Shtenco/synergy_system)
 
 ### Evidence rule
 
@@ -1269,7 +1269,7 @@ flowchart LR
 
 ---
 
-# 🤖 Глубокий доказательный паспорт Agentic AI Economy
+#  Глубокий доказательный паспорт Agentic AI Economy
 
 ## Реальный canonical benchmark stack
 
@@ -1279,7 +1279,7 @@ flowchart LR
 flowchart LR
     HIST[Real historical blocks] --> ALIGN[Causal alignment]
     ALIGN --> TRAIN[10k TRAIN]
-    TRAIN --> FREEZE[🔒 Freeze]
+    TRAIN --> FREEZE[ Freeze]
     FREEZE --> OOS[3k strict OOS]
     OOS --> NAV[HardNAV report]
     NAV --> NEG[Negative controls]
